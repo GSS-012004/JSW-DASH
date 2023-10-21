@@ -1,0 +1,165 @@
+<div id="sidebarWrapper" class="">
+
+    <!-- Sidebar -->
+    <div class="custom-menu">
+        <!-- <button id="toggle" class="btn primary" (click)="toggleSidebar()" >
+        <fa-icon icon="sliders"></fa-icon>
+       </button> -->
+    </div>
+    <nav id="sidebar">
+        <div class="sidebar-header">
+            <strong class="p-1" id="img">
+                <img  src="assets/images/DocketRun_logo.png" class="logo" alt="">
+            </strong>
+
+            <div id="CollapseImg" class="p-1">
+                <img src="assets/images/DocketRun_logo_alt.png" class="logo" alt="">
+
+            </div>
+        </div>
+        <div class="toggle-button" (click)="toggleSidebar()">
+            <fa-icon icon="bars"></fa-icon>
+        </div>
+
+        <ul class="list-unstyled components">
+
+            <!-- <li class="active">
+                <a href="#homeSubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">Home</a>
+                <ul class="collapse list-unstyled" id="homeSubmenu">
+                    <li>
+                        <a href="#">Home 1</a>
+                    </li>
+                    <li>
+                        <a href="#">Home 2</a>
+                    </li>
+                    <li>
+                        <a href="#">Home 3</a>
+                    </li>
+                </ul>
+            </li> -->
+             <li class="mt-4">
+                <!-- [ngbPopover]="isCollapse?'Dashboard':''" -->
+                <a routerLink="/app/dashboard" placement="end"  popoverTitle=""
+                    popoverClass="custom-popover" triggers="mouseenter:mouseleave" routerLinkActive="active">
+                    <!-- <fa-icon icon="exclamation-triangle" class="me-2"></fa-icon> -->
+                    <fa-icon icon="home" class="me-2"></fa-icon>
+
+                    <span>Dashboard</span> </a>
+            </li>
+
+            <!-- <li class="mt-4" placement="end" [ngbPopover]="isCollapse?'ESI Monitor':''" popoverTitle="" popoverClass="custom-popover"  triggers="mouseenter:mouseleave"  >
+                <a routerLink="/app/jobsheetMoniter" routerLinkActive="active">
+                    <fa-icon icon="file" class="me-2"></fa-icon>
+                  <span> ESI Monitor</span></a>
+            </li> -->
+
+            <li class="mt-4">
+                <a  popoverTitle="" popoverClass="custom-popover"
+                    triggers="mouseenter:mouseleave" routerLink="/app/violations" routerLinkActive="active">
+                    <!-- [ngbPopover]="isCollapse?'Violations':''"
+                         <fa-icon icon="exclamation-triangle" class="me-2"></fa-icon> -->
+                    <fa-icon icon="triangle-exclamation" class="me-2"></fa-icon>
+
+                    <span> Violations</span></a>
+            </li>
+            <!-- <li class="mt-4">
+                <a  [ngbPopover]="isCollapse?'Violations':''" popoverTitle="" popoverClass="custom-popover" triggers="mouseenter:mouseleave" routerLink="/app/WaterColorChange" routerLinkActive="active" >
+                    <fa-icon icon="droplet" class="me-2"></fa-icon>
+                   <span>Water</span></a>
+            </li> -->
+
+            <li class="mt-4">
+                <a  popoverTitle="" popoverClass="custom-popover"
+                    triggers="mouseenter:mouseleave" routerLink="/app/trafficCount" routerLinkActive="active">
+                    <!-- [ngbPopover]="isCollapse?'Traffic Count':''"
+                        <fa-icon icon="exclamation-triangle" class="me-2"></fa-icon> -->
+                    <fa-icon icon="person-walking-dashed-line-arrow-right" class="me-2"></fa-icon>
+
+                    <span> Traffic Count</span></a>
+            </li>
+            <li class="mt-4">
+                <a  popoverTitle="" popoverClass="custom-popover"
+                    triggers="mouseenter:mouseleave" routerLink="/app/CameraSettings" routerLinkActive="active">
+                    <fa-icon icon="camera" class="me-2"></fa-icon>
+                    <!-- [ngbPopover]="isCollapse?'Camera Settings':''" -->
+                    <span> Camera Settings</span></a>
+            </li>
+
+            <li class="mt-4">
+                <a  popoverTitle="" popoverClass="custom-popover"
+                    triggers="mouseenter:mouseleave" routerLink="/app/reportSettings" routerLinkActive="active">
+
+                    <!-- [ngbPopover]="isCollapse?'Report Settings':''" -->
+                    <!-- <span class="icon-container">
+                        <fa-icon [icon]="['fas', 'file']" size="lg" class="file-icon"></fa-icon>
+                        <fa-icon [icon]="['fas', 'cog']" size="sm" class="cog-icon"></fa-icon>
+                    </span> -->
+                    <fa-icon [icon]="['fas', 'cog']"  class="file-icon"></fa-icon>
+
+                    <span>Settings</span> </a>
+            </li>
+
+            <li class="mt-4" >
+                <a  popoverTitle=""   Router-link   popoverClass="custom-popover"
+                triggers="mouseenter:mouseleave"  routerLink="/app/fireandsmoke"  routerLinkActive="active">
+                <!-- <i class="fa-solid fa-fire-smoke"></i> -->
+                <!-- <fa-icon [icon]="['fas', 'fire-smoke']" class = "file-icon"></fa-icon> -->
+
+                <!-- <img src="path-to-your-custom-icon.png" alt="Fire and Smoke Icon" class="me-2"> -->
+                <fa-icon icon="fire" class="me-2"></fa-icon>
+                <!-- <fa-icon icon="cloud" class="text-gray"></fa-icon> -->
+               <span>Fire and Smoke</span></a>
+            </li>  
+            <i class="fa-solid fa-person-walking-dashed-line-arrow-right"></i>
+
+
+            <li class="mt-4">
+                <a  popoverTitle="" popoverClass="custom-popover"
+                    triggers="mouseenter:mouseleave" routerLink="/app/about" routerLinkActive="active">
+
+                    <!-- [ngbPopover]="isCollapse?'Report Settings':''" -->
+                    <!-- <span class="icon-container">
+                        <fa-icon [icon]="['fas', 'file']" size="lg" class="file-icon"></fa-icon>
+                        <fa-icon [icon]="['fas', 'cog']" size="sm" class="cog-icon"></fa-icon>
+                    </span> -->
+
+                    <fa-icon icon="info-circle" class="me-2"></fa-icon>
+                    <span>About</span></a>
+            </li>
+
+
+
+
+
+            <!-- <li class="mt-4">
+                <a [ngbPopover]="isCollapse?'Smart Video Recording':''" popoverTitle="" popoverClass="custom-popover"
+                    triggers="mouseenter:mouseleave" routerLink="/app/smartVideoRecorder" routerLinkActive="active">
+                    <fa-icon icon="video" class="me-2"></fa-icon>
+                    <span> Smart Video Recorder</span> </a>
+            </li> -->
+            <!-- <li>
+                <a routerLink="/app/jobsheetUpload" routerLinkActive="active" target="_blank">Job sheet Upload</a>
+            </li> -->
+            <!-- <li>
+                <a href="#pageSubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">Pages</a>
+                <ul class="collapse list-unstyled" id="pageSubmenu">
+                    <li>
+                        <a href="#">Page 1</a>
+                    </li>
+                    <li>
+                        <a href="#">Page 2</a>
+                    </li>
+                    <li>
+                        <a href="#">Page 3</a>
+                    </li>
+                </ul>
+            </li> -->
+            <!-- <li class="">
+                <a  routerLinkActive="active" (click)="Logout()" class="logout">                <fa-icon icon="arrow-right-from-bracket" class="me-2"></fa-icon>
+                   &nbsp;&nbsp; Log Out  &nbsp;&nbsp;</a>
+            </li> -->
+
+        </ul>
+    </nav>
+
+</div>
