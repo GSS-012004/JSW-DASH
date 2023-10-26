@@ -17,6 +17,7 @@ import { ServerService } from "src/app/Services/server.service";
 import { FireAndSmokeViolationComponent } from './fire-and-smoke-violation.component';
 import { Tree } from 'primeng/tree';
 import { TreeSelectModule } from 'primeng/treeselect';
+import { FireandsmokeService } from './fireandsmoke.service';
 
 
 const routes:Routes=[{path:'',component:FireAndSmokeViolationComponent}]
@@ -39,7 +40,7 @@ const routes:Routes=[{path:'',component:FireAndSmokeViolationComponent}]
 
     ],
 
-     providers:[ServerService],
+     providers:[FireandsmokeService],
     // entryComponents:[alertComponent],
 
   exports:[RouterModule]

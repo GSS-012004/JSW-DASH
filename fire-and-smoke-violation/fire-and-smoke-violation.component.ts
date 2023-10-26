@@ -13,7 +13,9 @@ import { saveAs } from 'file-saver';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Moment } from 'moment';
 import { DaterangepickerDirective } from 'ngx-daterangepicker-material';
-import dayjs from 'dayjs/esm';
+ import dayjs from 'dayjs/esm';
+import { FireandsmokeService } from './fireandsmoke.service';
+// import * as dayjs from 'dayjs'
 
 export interface violation {
   si_no?: string
@@ -114,7 +116,7 @@ export class FireAndSmokeViolationComponent
 
 
     constructor(private http: HttpClient,
-      private webServer: ServerService,
+      private webServer: FireandsmokeService,
       private datepipe: DatePipe,
       private toasterService: ToastrService,
       private _lightbox: Lightbox,
