@@ -234,3 +234,29 @@
   .row {
   display: flex; /* Use a flex container to place elements side by side */
   }
+  
+    .center-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+    /* img{
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+    img[data-center] {
+      display: block; /* Ensures the image is a block element */
+      /* margin: 0 auto; /* Center horizontally */
+    /* } */
+    
+    img[data-center] {
+      display: block; /* Ensures the image is a block element */
+      margin: 0 auto; /* Center horizontally */
+      border: 2px solid #333; /* Add a 2px-wide solid border with color #333 */
+    }
+    
+    
+  
