@@ -1,4 +1,4 @@
-import { DatePipe, Time } from '@angular/common';
+import { DatePipe } from '@angular/common';
 import { HttpClient, HttpHeaders, HttpResponse } from '@angular/common/http';
 import { Component, ElementRef, OnDestroy, OnInit, Query, ViewChild, ViewChildren } from '@angular/core';
 import { ServerService } from 'src/app/Services/server.service';
@@ -8,7 +8,7 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Observable, of, startWith, Subscriber, Subscription, switchMap } from 'rxjs';
 import { IDropdownSettings } from 'ng-multiselect-dropdown';
 import { ToastrService } from 'ngx-toastr'
-import { ModalDismissReasons, NgbDate, NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { ModalDismissReasons,NgbCarouselConfig, NgbDate, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { saveAs } from 'file-saver';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Moment } from 'moment';
@@ -113,19 +113,26 @@ export class FireAndSmokeViolationComponent
     currentDate:Date;
     currentTime:Date;
 
+    isEditTable: boolean = true
+   
+   dataFetchStatus: string = 'init'
 
 
     constructor(private http: HttpClient,
       private webServer: FireandsmokeService,
+      // private webServer: ServerService,
+     
       private datepipe: DatePipe,
       private toasterService: ToastrService,
       private _lightbox: Lightbox,
       private _lightBoxConfig: LightboxConfig,
       private router: Router,
       private snackbar: MatSnackBar,
-      public modalService: NgbModal,)
+      public modalService: NgbModal,
+      public Router: Router,
+     )
      {
-      // this.API = webServer.IP
+       this.API = webServer.IP
        this.ExcelRange = 0
 
 
@@ -220,14 +227,127 @@ export class FireAndSmokeViolationComponent
 
 
 
+// ngOnInit(): void {
+//   this.getCameraList();
+//   this.currentDate = new Date();
+//   setInterval(() => {
+//     this.currentTime = new Date();
+//     //  this.currentTime = new Time();
+// //this. getViolationTypes();
+
+//   }, 1000);
+ 
+//   var fromDate = this.webServer.dateTransform(new Date()) + ' ' + '00:00:00'
+//   var toDate = this.webServer.dateTransform(new Date()) + ' ' + '23:59:59'
+//   this.fromDateControl.setValue(fromDate)
+//   this.toDateControl.setValue(toDate)
+
+//   this.dropdownSettings = {
+//     singleSelection: true,
+//     idField: 'item_id',
+//     textField: 'item_text',
+//     // selectAllText: 'Select All',
+//     // unSelectAllText: 'UnSelect All',
+//     itemsShowLimit: 1,
+//     allowSearchFilter: true,
+//     // closeDropDownOnSelection: true,
+//     // noDataAvailablePlaceholderText: 'No cameras detected',
+//     // maxHeight: 197
+//   };
+
+
+
+
+
+
+
+
+//   this.dropdownSettings2 = {
+//     singleSelection: true,
+//     idField: 'item_id',
+//     textField: 'item_text',
+
+//     itemsShowLimit: 1,
+//     allowSearchFilter: true,
+//     closeDropDownOnSelection: true,
+//     noDataAvailablePlaceholderText: 'No violation types detected',
+//     maxHeight: 197
+//   };
+
+
+
+
+
+
+//   //...........Reading previous violation data's length from local storage....
+//   this.violLength = Number(localStorage.getItem("updatedLen"))
+
+
+
+//   //------------Reading the camera details--------------
+//   //uncomment while you work
+//   this.webServer.GetCameraNames().subscribe((data: any) => {
+//     console.log('data',data)
+//     if (data.success === true) {
+
+//       data.message.forEach((el: any, i: number) => { this.cameraDetails[i] = { camera_id: el.camera_id, camera_name: el.camera_name } })
+//       console.log(this.cameraDetails)
+
+//     }
+//     else {
+
+//     }
+//   })
+//   var table = document.getElementById('dataTable')
+//   table?.classList.add('loading')
+
+
+//   if (!this.latest || this.isLatest) {
+//     this.webServer.LiveViolationData().subscribe((Rdata: any) => {
+//       if (Rdata.success) {
+
+//         table?.classList.remove('loading')
+
+//         var data = Rdata.message
+//         console.log('rdata',data)
+//         this.imageData = Rdata.message
+//         this.tempdata = Rdata.message
+//         Number(localStorage.setItem("updatedLen", Rdata.message.length ? Rdata.message.length : 0))
+//         this.tempdata = Rdata.message
+//         this.total = of(this.tempdata.length)
+//         this.violData = of(Rdata.message)
+//         // console.log(this.violData)
+//         this.sliceVD()
+//       }
+//       else {
+//         table?.classList.remove('loading')
+//         this.notification(Rdata.message)
+//       }
+//     },
+//       err => {
+//         table?.classList.remove('loading')
+
+//         this.notification("Error While fetching the data")
+//       })
+
+
+//   }
+
+
+
+// }
+
+
+
+
+
+
+
+
+
+
+
 ngOnInit(): void {
-  this.getCameraList();
-  this.currentDate = new Date();
-  setInterval(() => {
-    this.currentTime = new Date();
-  }, 1000);
-  // this.currentTime = new Time();
-//  this. getViolationTypes();
 
   var fromDate = this.webServer.dateTransform(new Date()) + ' ' + '00:00:00'
   var toDate = this.webServer.dateTransform(new Date()) + ' ' + '23:59:59'
@@ -247,13 +367,6 @@ ngOnInit(): void {
     // maxHeight: 197
   };
 
-
-
-
-
-
-
-
   this.dropdownSettings2 = {
     singleSelection: true,
     idField: 'item_id',
@@ -265,11 +378,6 @@ ngOnInit(): void {
     noDataAvailablePlaceholderText: 'No violation types detected',
     maxHeight: 197
   };
-
-
-
-
-
 
   //...........Reading previous violation data's length from local storage....
   this.violLength = Number(localStorage.getItem("updatedLen"))
@@ -295,7 +403,7 @@ ngOnInit(): void {
 
 
   if (!this.latest || this.isLatest) {
-    this.webServer.LiveViolationData().subscribe((Rdata: any) => {
+    this.webServer.LiveRAViolationData().subscribe((Rdata: any) => {
       if (Rdata.success) {
 
         table?.classList.remove('loading')
@@ -645,11 +753,11 @@ Submit() {
 
   }
 
-  // ngAfterViewInit() {
-  //   this.dataread()
+  ngAfterViewInit() {
+    this.dataread()
 
 
-  // }
+  }
 
   public dataread() {
 
@@ -658,8 +766,10 @@ Submit() {
         if (Number(localStorage.getItem("updatedLen"))) {
           this.violLength = Number(localStorage.getItem("updatedLen"))
         }
-        this.Subsciption = this.webServer.LiveViolationData(this.selectedCameraId, this.selectedViolType).subscribe((Rdata: any) => {
+        this.Subsciption = this.webServer.LiveRAViolationData(this.selectedCameraId, this.selectedViolType).subscribe((Rdata: any) => {
           // console.log(Rdata)
+          this.dataFetchStatus = 'success'
+
           if (Rdata.success) {
             var response = { ...Rdata }
             var cviol = [...Rdata.message]
@@ -676,16 +786,16 @@ Submit() {
 
               if (this.alert) {
                 for (let i = diff - 1; i >= 0; i--) {
-                  var todayi = new Date()
-                  var tempi = new Date(cviol[i].timestamp)
+                  // var todayi = new Date()
+                  // var tempi = new Date(cviol[i].timestamp)
 
                   //hooter configaration
 
                   if (this.alert) {
 
-                    this.currentViol = cviol[i]
-
+                   
                     setTimeout(() => {
+                      this.currentViol = cviol[i]
 
                       this.showViol()
 
@@ -698,13 +808,17 @@ Submit() {
 
             }
           }
+
+        }, Err => {
+          this.dataFetchStatus = 'Error'
         }
         )
         if (!this.latest) {
-          this.webServer.LiveViolationData().subscribe((Response: any) => {
+          this.webServer.LiveRAViolationData().subscribe((Response: any) => {
             if (!this.latest) {
               if (Response.success === true) {
                 console.log(Response)
+
                 console.log(this.selectedCameraId)
                 console.log(Response.message)
 
@@ -735,6 +849,9 @@ Submit() {
 
               }
               else {
+                this.tempdata=[]
+                this.violData=of([])
+                this.total=of(0)
 
               }
             }
@@ -969,4 +1086,315 @@ Submit() {
   // }
 
 
+  ResetFilters() {
+    this.selectedMoments = null
+    this.selectedItems = null
+    this.isdatewise = false
+
+    this.dataread()
+  }
+
+  // VerifyTrueViol(event: any, viol: any) {
+  //   this.editViol = viol
+  //   this.webServer.VerifyViolation(this.editViol._id.$oid, true).subscribe((response: any) => {
+  //     this.webServer.notification(response.message)
+  //     if (response.success) {
+  //       this.modalService.dismissAll()
+  //       if (this.isdatewise)
+  //         this.Submit()
+  //     }
+  //     if (!this.isdatewise) {
+  //       this.GetViolationData()
+  //     }
+  //   }, (Err: any) => {
+  //     this.webServer.notification("Error while the  Process", 'Retry')
+  //   })
+  // }
+
+
+  // VerifyFalseViol(event: any, viol: any) {
+  //   this.editViol = viol
+  //   this.webServer.VerifyViolation(this.editViol._id.$oid, false).subscribe((response: any) => {
+  //     this.webServer.notification(response.message)
+  //     if (response.success) {
+  //       this.modalService.dismissAll()
+  //       if (this.isdatewise)
+  //         this.Submit()
+  //     }
+  //     if (!this.isdatewise) {
+  //       this.GetViolationData()
+  //     }
+  //   }, (Err: any) => {
+  //     this.webServer.notification("Error while the  Process", 'Retry')
+  //   })
+  // }
+
+
+  //  //function to get the live  violation data
+  //  GetViolationData() {
+  //   var table = document.getElementById('content')
+  //   table?.classList.add('loading')
+
+  //   if (!this.latest || this.isLatest) {
+  //     this.webServer.LiveRAViolationData().subscribe((Rdata: any) => {
+  //       if (Rdata.success) {
+
+  //         table?.classList.remove('loading')
+
+  //         var data = Rdata.message
+
+  //         this.imageData = Rdata.message
+  //         this.tempdata = Rdata.message
+  //         Number(localStorage.setItem("updatedLen", Rdata.message.length ? Rdata.message.length : 0))
+
+  //         this.tempdata = Rdata.message
+  //         // this.imageCarousal()
+
+
+  //         this.total = of(this.tempdata.length)
+  //         this.violData = of(Rdata.message)
+  //         this.sliceVD()
+
+
+  //       }
+  //       else {
+  //         table?.classList.remove('loading')
+  //         this.notification(Rdata.message)
+  //       }
+  //     },
+  //       err => {
+  //         table?.classList.remove('loading')
+
+  //         this.notification("Error While fetching the data")
+  //       })
+
+  //   }
+  // }
+
+
+  IsDeleteData(modal: any, violationData: any) {
+    this.selectedViolation = violationData
+    this.modalService.open(modal)
+  }
+
+
+  VerifyFalseViol(event: any, viol: any) {
+    this.editViol = viol
+    this.webServer.VerifyViolation(this.editViol._id.$oid, false).subscribe((response: any) => {
+      this.webServer.notification(response.message)
+      if (response.success) {
+        this.modalService.dismissAll()
+        if (this.isdatewise)
+          this.Submit()
+      }
+      if (!this.isdatewise) {
+        this.GetViolationData()
+      }
+    }, (Err: any) => {
+      this.webServer.notification("Error while the  Process", 'Retry')
+    })
+  }
+
+
+
+
+  GetViolationData() {
+    var table = document.getElementById('content')
+    table?.classList.add('loading')
+
+    if (!this.latest || this.isLatest) {
+      this.webServer.LiveRAViolationData().subscribe((Rdata: any) => {
+        if (Rdata.success) {
+
+          table?.classList.remove('loading')
+
+          var data = Rdata.message
+
+          this.imageData = Rdata.message
+          this.tempdata = Rdata.message
+          Number(localStorage.setItem("updatedLen", Rdata.message.length ? Rdata.message.length : 0))
+
+          this.tempdata = Rdata.message
+          // this.imageCarousal()
+
+
+          this.total = of(this.tempdata.length)
+          this.violData = of(Rdata.message)
+          this.sliceVD()
+
+
+        }
+        else {
+          table?.classList.remove('loading')
+          this.notification(Rdata.message)
+        }
+      },
+        err => {
+          table?.classList.remove('loading')
+
+          this.notification("Error While fetching the data")
+        })
+
+    }
+  }
+
+
+  VerifyTrueViol(event: any, viol: any) {
+    this.editViol = viol
+    this.webServer.VerifyViolation(this.editViol._id.$oid, true).subscribe((response: any) => {
+      this.webServer.notification(response.message)
+      if (response.success) {
+        this.modalService.dismissAll()
+        if (this.isdatewise)
+          this.Submit()
+      }
+      if (!this.isdatewise) {
+        this.GetViolationData()
+      }
+    }, (Err: any) => {
+      this.webServer.notification("Error while the  Process", 'Retry')
+    })
+  }
+
+
+  DeleteViolationData() {
+    this.webServer.DeleteViolationData(this.selectedViolation._id.$oid).subscribe((response: any) => {
+      if (response.success) {
+        this.modalService.dismissAll()
+
+        this.webServer.notification(response.message)
+this.RefreshViolationData()      } else {
+        this.modalService.dismissAll()
+        this.webServer.notification(response.message, 'Retry')
+      }
+    },
+      Err => {
+        this.webServer.notification('Error while the process', 'Retry')
+      })
+
+  }
+
+
+
+  RefreshViolationData() {
+
+    if (!this.isdatewise && !this.isLatest) {
+      var table = document.getElementById('dataTable')
+      table?.classList.add('loading')
+  
+      this.webServer.LiveRAViolationData().subscribe((Response: any) => {
+        if (!this.latest) {
+          table.classList.remove('loading')
+          if (Response.success === true) {
+
+            this.imageData = Response.message
+            this.tempdata = Response.message
+            //  this.imageCarousal()
+            this.total = of(this.violdata.length)
+          
+
+            this.violData = of(Response.message)
+
+            data = Response.message
+            this.sliceVD()
+            var data = Response.message
+            this.violdata = Response.message
+            // this.tempdata = this.violdata
+
+            if (this.tempdata.length > 0) {
+              this.Excel = true
+            }
+            else {
+            }
+
+            this.sliceVD()
+
+          }
+          else {
+
+          }
+        }
+      }, (err: any) => {
+        table.classList.remove('loading')
+        console.log(err)
+      })
+    }
+
+    else if (this.isdatewise && !this.isLatest) {
+      var table = document.getElementById('dataTable')
+    table?.classList.add('loading')
+
+    this.pageSize = 30
+    this.page = 1
+    this.webServer.DatewiseRAViolations(this.fromDate, this.toDate, null, null, this.selectedCameraId ? this.selectedCameraId : null, this.selectedViolType ? this.selectedViolType : null).subscribe((Response: any) => {
+      this.dataFetchStatus = 'success'
+      if (Response.success) {
+        if (Response.message.length == 0) {
+          this.tempdata = []
+          this.violData = of([])
+          
+          this.total = of(0)
+          table?.classList.remove('loading')
+          this.notification("No violations found for entered date and time")
+        }
+        if (Response.message.length > 0) {
+          this.imageData = Response.message
+          this.total = of(Response.message.length)
+          this.webServer.DatewiseRAViolations(this.fromDate, this.toDate, this.page, this.pageSize, this.selectedCameraId ? this.selectedCameraId : null, this.selectedViolType ? this.selectedViolType : null).subscribe((Response: any) => {
+            if (Response.success) {
+              table?.classList.remove('loading')
+              // console.log(Response.message)
+              if (Response.message.length === 0) {
+                this.notification("No violations found")
+                this.violData = of([])
+
+              }
+
+              else {
+
+                this.tempdata = Response.message
+                //this.imageCarousal()
+                // console.log(this.tempdata)
+
+                this.violData = of(this.tempdata)
+                this.sliceVD()
+
+
+              }
+            }
+
+
+
+          },
+            err => {
+              this.dataFetchStatus = 'Error'
+              this.notification("Error while fetching the data")
+            })
+        }
+      }
+      else {
+        this.tempdata = []
+        this.violData = of([])
+        
+        this.total = of(0)
+        table?.classList.remove('loading')
+        table?.classList.remove('loading')
+        this.notification("No violations found")
+      }
+
+
+
+    }, err => {
+    })
+
+    }
+
+    else if(this.isLatest || this.latest){
+     this.getLatestData()
+    }
+  }
+  
+
+
+  
 }

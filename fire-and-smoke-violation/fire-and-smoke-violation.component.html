@@ -1,379 +1,524 @@
 <div class="container-fluid dashboard-content" #datatable  id="content">
-    <div class="page-header">
-        <h2>Fire and Smoke Violations</h2>
+    <div class="">
+        <h5>Fire and Smoke Violations</h5>
     </div>
 
     <!-- ============================================================== -->
     <!-- INPUTS -->
     <!-- ============================================================== -->
-    <div class="row mx-auto mt-3 mb-3" id="content">
-        <div class="col-xl-2 col-sm-12 col-lg-6 col-xs-12 col-md-6 mb-3">
-            <div class="dl-date-time-picker">
-                <div class="datePickerContainer" (click)="openDatePicker($event)">
-                    <span>
-                         <input type="text" [showCustomRangeLabel]="true" ngxDaterangepickerMd   #datepicker
-                            [ranges]="ranges" 
-                            [timePicker]="true"  placeholder="Select Date"
-                            [(ngModel)]="selectedMoments" required id="dateInput" class="form-control"  />
-                    </span>
-                    <span class="input-group-append">
-                        <button class="ngx-daterangepicker-action btn default" type="button" title="icon">
-                            <fa-icon icon="calendar" class="ngx-daterangepicker-action"(click)="openDatePicker($event)"></fa-icon>
-                        </button>
-                    </span>
+
+    <div class="row mx-auto mt-3 mb-3" id="content" *ngIf="false">
+
+        <div class="col-xl-2 col-sm-12 col-lg-6 col-xs-12 col-md-6">
+            <div class="w-100">
+                <div class="me-1 ms-2 date-picker">
+                    <input ngxDaterangepickerMd #datepicker [timePicker]="true" placeholder="Select Date"
+                        class="form-control" [timePicker]="true" id="dateInput" [(ngModel)]="selectedMoments" required>
+                    <fa-icon icon="calendar"></fa-icon>
                 </div>
             </div>
         </div>
 
 
-        <!-- <div class="col-xl-2 col-xs-12 col-sm-12 col-md-6 col-lg-6 mb-3">
-            <div class="row">
-                        <p-treeSelect  containerStyleClass="w-full" [(ngModel)]="selectedViolation"  [ngModelOptions]=" 
-                        {standalone: true}" [options]="violationTypeList|async" (onNodeSelect)="onViolationTypeSelect($event)"  placeholder="Select Violation"></p-treeSelect>
-                    </div>
-                    </div> -->
+                        <!-- <div class="col-xl-2 col-xs-12 col-sm-12 col-md-6 col-lg-6 mb-3">
+                            <div class="row">
+                                        <p-treeSelect  containerStyleClass="w-full" [(ngModel)]="selectedViolation"  [ngModelOptions]=" 
+                                        {standalone: true}" [options]="violationTypeList|async" (onNodeSelect)="onViolationTypeSelect($event)"  placeholder="Select Violation"></p-treeSelect>
+                                    </div>
+                                    </div> -->
 
 
-                    <div class="col-xl-2 col-xs-12 col-sm-12 col-md-6 col-lg-6 mb-3">
-            <div class="row">
-                        <p-treeSelect  containerStyleClass="w-full" [ngModelOptions] ="{standalone: true}"  containerStyleClass="w-full" [(ngModel)]="selectedItems" (onNodeSelect)="onCameraIdSelect($event)"  [options]="dropdownList|async" placeholder="Select Camera"></p-treeSelect>
+        <div class="col-xl-2 col-xs-12 col-sm-12 col-md-6 col-lg-6">
+            <div class="row" id="filter">
+                <p-treeSelect containerStyleClass="w-full" [ngModelOptions]=" 
+                    {standalone: true}" containerStyleClass="w-full" [(ngModel)]="selectedItems"
+                    (onNodeSelect)="onCameraIdSelect($event)" [options]="dropdownList|async"
+                     placeholder="Select Camera"></p-treeSelect>
             </div>
         </div>
 
 
-
-        <!-- <div class="col-xl-3 col-sm-12 col-lg-12 col-xs-12 col-md-12 mb-3">
-            <button class="btn default text-white me-3 ms-1" style="width:80px">
-           <span>Submit</span>
-             <span class="spinner-border spinner-border-sm"   ></span> -->
-            <!-- </button>&nbsp;
-            <button type="submit" class="btn default text-white me-3">
-                <fa-icon icon="download" class="ms-1 me-1" style="cursor: pointer;" ></fa-icon>
-                <span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"
-                ></span> -->
-                <!-- Excel 
-            </button>&nbsp;
-         </div>  -->
-
+                         <!-- <div class="col-xl-3 col-sm-12 col-lg-12 col-xs-12 col-md-12 mb-3">
+                                    <button class="btn default text-white me-3 ms-1" style="width:80px">
+                                <span>Submit</span>
+                                    <span class="spinner-border spinner-border-sm"   ></span> -->
+                                    <!-- </button>&nbsp;
+                                    <button type="submit" class="btn default text-white me-3">
+                                        <fa-icon icon="download" class="ms-1 me-1" style="cursor: pointer;" ></fa-icon>
+                                        <span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"
+                                        ></span> -->
+                                        <!-- Excel 
+                                    </button>&nbsp;
+                                </div>  -->
 
 
-         <div class="col-xl-5 col-sm-12 col-lg-12 col-xs-12 col-md-12 mb-3">
-        <button class="btn default text-white me-3 ms-1" style="width:80px" (click)="Submit()" style="width:80px"
-            [disabled]="(selectedMoments.startDate===null || selectedMoments.endDate===null)"><span
+
+        <div class="col-xl-3 col-sm-12 col-lg-12 col-xs-12 col-md-12">
+            <button class="btn default text-white me-3 ms-1" style="width:80px" (click)="Submit()" style="width:80px"
+                [disabled]="(selectedMoments.startDate===null || selectedMoments.endDate===null)"><span
                 *ngIf="!loading">Submit</span>
-            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" *ngIf="loading"></span>
-        </button>&nbsp;
+                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" *ngIf="loading"></span>
+            </button>&nbsp;
 
 
 
-
-        <button type="submit" class="btn default text-white me-3" (click)="submitForm()"
-            [disabled]="(selectedMoments.startDate===null || selectedMoments.endDate===null)||excelLoad">
-            <fa-icon icon="download" class="ms-1 me-1" style="cursor: pointer;" *ngIf="!excelLoad"></fa-icon>
-            <span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"
+            <button type="submit" class="btn default text-white me-3" (click)="submitForm()"
+                 [disabled]="(selectedMoments.startDate===null || selectedMoments.endDate===null)||excelLoad">
+                <fa-icon icon="download" class="ms-1 me-1" style="cursor: pointer;" *ngIf="!excelLoad"></fa-icon>
+                <span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"
                 *ngIf="excelLoad"></span> Excel
-        </button>&nbsp;
-    </div>
+           </button>&nbsp;
+        </div>
 
 
 
 
 
-    <div class="col-xl-3 col-sm-12 col-lg-6 col-xs-12 col-md-12 mb-3">
-
-
-
-
-        <div class="float-end">
-                <!-- <div class="col-xl-2 co mel-sm-4 col-lg-4 col-xs-4 col-md-4 mb-3">  -->
-                <button class="btn default text-white" *ngIf="isdatewise || isLatest" (click)="BackToToday()"
-                    style="width:100px">
-                    <fa-icon icon="chart-area" *ngIf="!loader2" class="text-white me-2"></fa-icon>
-                    <span *ngIf="!loader2">&nbsp; Live &nbsp;</span>
-                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"
+       
+            <div class="col-xl-3 col-sm-12 col-lg-6 col-xs-12 col-md-6">
+                <div class="float-end">
+                                <!-- <div class="col-xl-2 co mel-sm-4 col-lg-4 col-xs-4 col-md-4 mb-3"> -->
+                    <button class="btn default text-white" *ngIf="isdatewise || isLatest" (click)="BackToToday()"
+                        style="width:100px">
+                        <fa-icon icon="chart-area" *ngIf="!loader2" class="text-white me-2"></fa-icon>
+                        <span *ngIf="!loader2">&nbsp; Live &nbsp;</span>
+                        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"
                         *ngIf="loader2"></span>
-                </button>
-        </div>
-
-        </div>
+                    </button>
+                </div>
+            </div>
+        
 
     </div>
 
-     <!-- ============================================================== -->
+
+    <div class="row">
+        <div class="">
+            <div class="d-flex flex-row mb-2 mt-4 card p-2" id="data-card" style="border-radius:7px !important;">
+
+
+
+                <div class="me-3">
+                    <div class="container p-3">
+                        <fa-icon icon="filter"></fa-icon>
+                    </div>
+                </div>
+                <div class="col-10 ">
+                    <div class="row d-flex align-items-center">
+                        <span class="col-2">
+                            <div class="datePickerContainer" (click)="openDatePicker($event)">
+                                <div class="w-80">
+                                    <input type="text" [showCustomRangeLabel]="true" ngxDaterangepickerMd #datepicker
+                                        [ranges]="ranges" [timePicker]="true" placeholder="Select Date"
+                                        [(ngModel)]="selectedMoments" required id="dateInput" class="form-control" />
+                                </div>
+
+                                <div class="input-group-append">
+                                    <button class="ngx-daterangepicker-action btn default" type="button">
+                                            <fa-icon icon="calendar" class="ngx-daterangepicker-action"
+                                            (click)="openDatePicker($event)"></fa-icon>
+                                    </button>
+                                </div>
+
+                            </div>
+                        </span>
+
+                        <div class="col-2" id="filter">
+                            <p-treeSelect [containerStyleClass]="'w-100'" class="w-100 d-flex"
+                                [(ngModel)]="selectedItems" [ngModelOptions]="{standalone: true}"
+                                [options]="dropdownList|async" [style]="{'width':'inherit'}"
+                                (onNodeSelect)="onCameraIdSelect($event)" placeholder="Select Camera"></p-treeSelect>
+                        </div>
+
+                        <div class="col-xl-7 col-sm-12 col-lg-12 col-xs-12 col-md-12 align-items-center">
+                            <button class="btn default-outline ms-3 me-3" (click)="ResetFilters()"
+                                *ngIf="selectedItems!==null||selectedMoments.startDate!==null ">&times; Cancel
+                                Filters</button>
+
+                            <button class="btn default text-white me-3 ms-1" style="width:80px" (click)="Submit()"
+                                style="width:80px"
+                                [disabled]="(selectedMoments.startDate===null || selectedMoments.endDate===null)"><span
+                                *ngIf="!loading">Submit</span>
+                                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"
+                                *ngIf="loading"></span>
+                            </button>&nbsp;
+
+                            <button type="submit" class="btn default text-white me-3" (click)="submitForm()"
+                                [disabled]="(selectedMoments.startDate===null || selectedMoments.endDate===null)||excelLoad">
+                                <fa-icon icon="download" class="ms-1 me-1" style="cursor: pointer;"
+                                *ngIf="!excelLoad"></fa-icon>
+                                <span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"
+                                *ngIf="excelLoad"></span> Excel
+                            </button>&nbsp;
+
+                            <div class="float-end">
+                                <!-- <div class="col-xl-2 co mel-sm-4 col-lg-4 col-xs-4 col-md-4 mb-3"> -->
+                                <button class="btn default text-white" *ngIf="isdatewise || isLatest"
+                                    (click)="BackToToday()" style="width:100px">
+                                    <fa-icon icon="chart-area" *ngIf="!loader2" class="text-white me-2"></fa-icon>
+                                    <span *ngIf="!loader2">&nbsp; Live &nbsp;</span>
+                                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"
+                                        *ngIf="loader2"></span>
+                                </button>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <!-- ============================================================== -->
     <!-- END OF INPUTS -->
     <!-- ============================================================== -->
 
 
 
 
+    
 
-     <!-- ============================================================== -->
-    <!-- DATA TABLE -->
+
 
 
     <!-- ============================================================== -->
+    <!-- DATA TABLE -->
+    <!-- ============================================================== -->
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card" id="data-card">
+                                                        <!-- <div class="card-header"> -->
+                                                            <!-- Violation Data -->
 
 
 
-         <div class="row">
-              <div class="col-12">
-                 <div class="card" id="data-card">
-                     <div class="card-header">
-                        <!-- Violation Data -->
+                                                            <!-- <div class="container">
+                                                                <div class="row">
+                                                                    <div class="col-md-12">
+                                                                        <div class="centered-container" > -->
 
 
 
-                        <!-- <div class="container">
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <div class="centered-container" > -->
-
-
-
-                                <!-- <button class="btn default-outline me-2 float-start"  style="width:7%"
-                                     placement="bottom" >
-                                 <fa-icon icon="bell"  class="me-1 me-md-2"></fa-icon>
-                                    <fa-icon icon="bell-slash"  class="me-1"></fa-icon>
-                                </button>&nbsp;
-                                <button class="btn default-outline float-start me-2"  style="width:7%"
-                                     placement="bottom" >
-                                 <fa-icon icon="volume-up"  class="me-1 me-md-2"></fa-icon>
-                                     <fa-icon icon="volume-off"  class="me-1"></fa-icon>
-                                </button>&nbsp; -->
-
-
-
-
-                                <button class="btn default-outline me-2 float-start" (click)="alertToggle()" style="width:7%"
-                                         placement="bottom" [ngbTooltip]="alert?'notification on':'notification off'">
-                                         <fa-icon icon="bell" *ngIf="alert" class="me-1"></fa-icon>
-                                        <fa-icon icon="bell-slash" *ngIf="!alert" class="me-1"></fa-icon>
-
-                                </button>&nbsp;
-
-                                <button class="btn default-outline float-start me-2" (click)="volumeToggle()" style="width:7%"
-                                         placement="bottom" [ngbTooltip]="audioOff ?'mute':'unmute'">
-                                        <fa-icon icon="volume-up" *ngIf="!audioOff" class="me-1"></fa-icon>
-                                        <fa-icon icon="volume-off" *ngIf="audioOff" class="me-1"></fa-icon>
-
-                                </button>&nbsp;
+                                                                    <!-- <button class="btn default-outline me-2 float-start"  style="width:7%"
+                                                                        placement="bottom" >
+                                                                    <fa-icon icon="bell"  class="me-1 me-md-2"></fa-icon>
+                                                                        <fa-icon icon="bell-slash"  class="me-1"></fa-icon>
+                                                                    </button>&nbsp;
+                                                                    <button class="btn default-outline float-start me-2"  style="width:7%"
+                                                                        placement="bottom" >
+                                                                    <fa-icon icon="volume-up"  class="me-1 me-md-2"></fa-icon>
+                                                                        <fa-icon icon="volume-off"  class="me-1"></fa-icon>
+                                                                    </button>&nbsp; -->
 
 
 
 
-                                    <span class = "float-end">
-                                         <!-- {{ currentDate | date:'dd-MM-yyyy' }}<br>  -->
-
-                                         <!-- <div class="element">-->
-                                            <!-- <div class="col align-self-end">
-                                         <span> {{ currentDate | date:'hh:mm:ss' }} </span></div>  
-                                         <div class="col align-self-center"> -->
-                                        <td  class = "justify-content-md-center">
-                                        <!-- <span class=" "> {{ currentDate | date:'hh:mm:ss' }} </span><br> -->
-                                            <span class=" "> {{ currentTime | date:'medium' }} </span><br>
-
-                                            <span  *ngIf="!(isdatewise || isLatest)">
-                                            <span class="spinner-grow spinner-grow-sm me-2 text-danger" role="status"
-                                                aria-hidden="true">
-                                            </span>Live</span>
-                                        </td>
-                                        <!-- </div> -->
-                                            <!-- <span class=" "> {{ currentDate | date:'hh:mm:ss' }} </span>  -->
-
-                                    </span>
+                               
 
 
 
-
-
-
-
-
-
-                    </div>
-
-                            <!-- </div>
-                        </div>
-                     </div>
-                </div> -->
-
-
-
-                        <!-- <span class="float-end"> 
-                        <span class="spinner-grow spinner-grow-sm me-2 text-danger" role="status"
-                                  aria-hidden="true">
-                        </span>Live</span>
-                    </div> -->
-
-
-
-
-                    <div class="mt-3 mb-2">
-                        <div class="form-group">
-
-                            <div class="">
-
-                                <button *ngIf="!isdatewise" (click)=getLatestData()
+                <div class="mt-3 mb-2">
+                    <div class="form-group">
+                        <div class="">
+                            <button *ngIf="!isdatewise" (click)=getLatestData()
                                     class="btn default ms-3 me-2 text-white float-start">
                                     <span class="spinner-border spinner-border-sm me-2 ms-1" role="status"
                                         aria-hidden="true" *ngIf="loaderLatest"></span>
                                     <fa-icon icon="filter" *ngIf="!loaderLatest" class="ms-1 me-2 text-white"
                                         style="cursor: pointer;"></fa-icon>Latest
-                                </button>
+                            </button>
+                        </div>
 
-                            </div>
-
-                            <span class="float-start ms-2 mt-2 me-2"></span>
-
-
-
-                            <span class="d-flex justify-content-end p-1"> <span class="mr-2 mt-2"
+                           
+                        <span class="float-end ms-2 mt-2 me-2">
+                                <span class="float-end" *ngIf="!(isdatewise || isLatest)"> <span
+                                class="spinner-grow spinner-grow-sm me-2 text-danger" role="status"
+                                aria-hidden="true"></span>Live Data</span>
+                        </span>
+        
+                           
+                        <span class="d-flex justify-content-end p-1"> <span class="mr-2 mt-2"
                                     *ngIf="isdatewise"><b>Show:</b></span>&nbsp;
-
                                 <select class="custom-select col-2" *ngIf="isdatewise" style="width: auto"
                                     [(ngModel)]="pageSize" (ngModelChange)="sliceVD()">
                                     <option ngValue=30>30 items per page</option>
                                     <option ngValue=40>40 items per page</option>
                                     <option ngValue=50>50 items per page</option>
-
-
                                 </select>
-                            </span>
-                        </div>
-
+                        </span>
                     </div>
-
-
-                    <div class="" id="dataTable" style="width:100%; overflow: auto;">
-
-                        <table class="table table-bordered" style="width:100%; overflow: auto;">
-                             <thead style="text-align: center;">
-                                <tr>
-                                    <th scope="col">
-                                        <b>SNo.</b>
-                                    </th>
-
-
-                                    <th scope="col">
-                                        <b><fa-icon icon="video" class="font-custome me-1"></fa-icon>
-                                            Video</b>
-                                        </th>
+                </div>
 
 
 
-                                    <th scope="col">   
-                                            <!-- <fa-icon icon="camera-retro" class="font-custome me-1"></fa-icon> -->
-                                            <b><fa-icon icon="triangle-exclamation" class="me-2"></fa-icon>
-                                                Violation Details</b>
 
-                                     </th>
+                <div id="dataTable">
+                    <div class="data-container" *ngIf="(violData|async).length>0;else noData" id="dataTable"
+                        style="width:100%;overflow: auto;">
 
-                                    <th scope="col">
+
+                        <div class="">
+                            <div class="header" style="overflow: auto;">
+                                <div scope="col" class="d-flex align-items-center justify-centent-center">
+                                    <div>
+                                        <b>SNo</b>
+                                    </div>
+                                </div>
+
+
+                                <div scope="col" class="d-flex justify-content-center align-items-center">
+                                    <div>
                                         <b>
-                                            <fa-icon icon="camera-retro" class="font-custome me-1"></fa-icon>Camera Name
+                                            <!-- <fa-icon icon="image" class="font-custome me-1"></fa-icon> -->
+                                            Image
                                         </b>
-                                    </th>
-                                    <!-- <th scope="col"><b>
-                                             <fa-icon icon="laptop" class="font-custome me-1"></fa-icon>Device Name
+                                    </div>
+                                </div>
+
+                                <div scope="col" class="d-flex justify-content-center align-items-center">
+                                    <!-- <fon Dea-icon icon="camera-retro" class="font-custome me-1"></fa-icon> -->
+                                    <div>
+                                        <b>
+                                            Violation Details
+                                        </b>
+                                    </div>
+                                </div>
+
+                                <div scope="col" class="d-flex justify-content-center align-items-center">
+                                    <div>
+
+                                        <b>
+                                            <!-- <fa-icon icon="camera-retro" class="font-custome me-1"></fa-icon> -->
+                                            Camera Name
+                                        </b>
+                                    </div>
+                                </div>
+                                        <!-- <th scope="col"><b>
+                                                <fa-icon icon="laptop" class="font-custome me-1"></fa-icon>Device Name
+                                            </b></th> -->
+
+                                <div scope="col" class="d-flex justify-content-center align-items-center">
+                                    <b>
+                                        <!-- <fa-icon icon="clock" class="font-custome me-1"></fa-icon> -->
+                                        Detected Time
+                                    </b>
+                                </div>
+                                        <!-- <th scope="col"><b>
+                                            <fa-icon icon="clock" class="font-custome me-1"></fa-icon>Exit Time
                                         </b></th> -->
 
-                                    <th scope="col">
-                                        <b>
-                                            <fa-icon icon="clock" class="font-custome me-1"></fa-icon>
-                                            Detected Time
-                                        </b>
-
-                                    </th>
-                                    <!-- <th scope="col"><b>
-                                        <fa-icon icon="clock" class="font-custome me-1"></fa-icon>Exit Time
-                                    </b></th> -->
-
-                                    <!-- <th *ngIf="isEditTable" scope="col">
+                                <div *ngIf="isEditTable" class="d-flex justify-content-center align-items-center"
+                                    scope="col">
+                                    <b>
                                         Is Valid?
-                                    </th> -->
-                                    <th scope="col">
-                                        Pre-set
-                                    </th>
+                                    </b>
+                                </div>
+
+                                <div scope="col" class="d-flex justify-content-center align-items-center">
+                                    <b> 
+                                        Preset
+                                    </b>
+                                </div>
+                                <div></div>
+                            
+                            </div>
+                            
+                            <ng-container *ngFor="let data of violData|async;let i=index" style="text-align: center;">
+                                <div>
+                                    <ngb-carousel>
+                                        <ng-container *ngFor="let d of data.data.reverse();let in=index">
+                                            <ng-template ngbSlide>
+                                                <div class="data-wrapper p-2">
+
+                                                    <div>{{data.SNo}}.{{in+1}}</div>
+
+                                                    <div class="d-flex justify-content-center align-items-center">
+                                                        <div class = "column-flex">
+                                                            <video width="320" controls>
+                                                                <source src = "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4"  type="video/mp4">
+                                                                            <!-- <iframe width="560" height="315" src="https://www.youtube.com/embed/WrQwVqN6Jlo" frameborder="0" allowfullscreen></iframe> -->
+                                                                            <!-- <source src = "https://www.w3schools.com/html/mov_bbb.mp4"  type="video/mp4"> -->
+                                                            </video><br/>
+
+                                                            <button class="btn btn-sm default text-white mt-2"> 
+                                                                <a (click)="downloadVideo()" >Download Video</a>
+                                                                <fa-icon icon="download" class="ms-1 me-1" style="cursor: pointer;"></fa-icon>
+                                                            </button>
+                                                       </div>
+                                                    </div>
+
+                                                                            <!-- <td scope="col">
+                                                                                <span><b class="mb-3">Fire</b></span><br>
+                                                                                <span><b>Smoke</b></span><br>
+                                                                                <span><b>Fire and Smoke</b></span><br>
 
 
-                                </tr>
-                            </thead>
-
-                            <tbody>
-                                <tr  *ngFor="let d of violData|async;let i=index" style="text-align: center;">
-                                    <td scope="col">
-                                        {{d.SNo}}
-                                    </td>
-
-
-                                    <td scope="col">
-                                        <video width="320" controls >
-                                            <source src = "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4"  type="video/mp4">
-                                            <!-- <iframe width="560" height="315" src="https://www.youtube.com/embed/WrQwVqN6Jlo" frameborder="0" allowfullscreen></iframe> -->
-                                            <!-- <source src = "https://www.w3schools.com/html/mov_bbb.mp4"  type="video/mp4"> -->
-
-                                        </video> <br />
-
-                                        <button class="btn btn-sm default text-white mt-2" > 
-                                                <!-- <a href="http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4,video/mp4" download> downloadVideo</a> -->
-                                                <a (click)="downloadVideo()" >Download Video</a>
-                                                <!-- Download Video -->
-                                        <fa-icon icon="download" class="ms-1 me-1" style="cursor: pointer;"></fa-icon>
-
-                                        <!-- <a href="http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4,video/mp4" download></a> -->
-                                    </button>
-                                    </td>
-                                    <td scope="col">
-                                        <span><b class="mb-3">Fire</b></span><br>
-                                        <span><b>Smoke</b></span><br>
-                                        <span><b>Fire and Smoke</b></span><br>
-
-
-                                    </td>
-
-                                    <td scope="col">
-                                        {{d.camera_name?d.camera_name:'null'}}
-                                    </td>
-
-                                    <td scope="col">
-                                        {{d.timestamp|dateFormater}}<br /><br /><br />
-                                        <b>
-                                            <!-- <fa-icon icon="clock" class="font-custome me-1"></fa-icon> -->
-                                             <!-- <fa-icon icon="fa-regular fa-circle-pause" class="font-custome me-1"></fa-icon> -->
-
-                                            Start time:
-                                        </b>&nbsp;&nbsp;&nbsp;
-
-                                        <b>
-                                            End time:
-                                        </b><br /><br /><br /><br />
-                                       <b> 
-                                        Duration:
-                                       </b>
-                                    </td>
-
-                                    <!-- <td scope="col">
-                                    </td> -->
-
-                                    <td scope="col">
-
-                                    </td>
+                                                                            </td> -->
 
 
 
-                                </tr>
-                            </tbody>
-                        </table>
 
+
+                                                                            <div class="d-flex justify-content-center align-items-center">
+                                                                                <div>
+                                                                                    <div *ngFor="let object of d.object_data;let in=index"
+                                                                                        ngClass="in!= (d.object_data.length-1) ? 'border-bottom':''">
+                        
+                                                                                        <div>
+                                                                                            <div class="mb-3">{{object.violation_count}} </div>
+                                                                                            <ul class="list-unstyled">
+                                                                                                <li>
+                                                                                                    <div
+                                                                                                        *ngFor="let key of objectKeys(object);">
+                                                                                                        <div class="items"
+                                                                                                            *ngIf="(key==='Helmet'?object[key]==='none'?false:object[key]===false?true:false:key.toLowerCase()==='vest'?object[key]!=='vest'?true:false:false)">
+                                                                                                            <input id="item1" type="checkbox"
+                                                                                                                [checked]="key==='Vest'?object[key].toLowerCase()=='vest'?true:false:object[key]">
+                                                                                                            <label
+                                                                                                                for="item1">{{key==='Vest'?'Vest':key}}</label>
+                                                                                                        </div>
+                        
+                                                                                                    </div>
+                                                                                                </li>
+                                                                                            </ul>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+
+
+                                    
+                                                    <div class="d-flex justify-content-center align-items-center">
+                                                        {{d.camera_name?d.camera_name:'null'}}
+                                                    </div>
+
+
+
+                                                    <div class="d-flex justify-content-center align-items-center">
+                                                        {{d.timestamp|dateFormater}}
+                                                        <!-- <b> -->
+                                                                        <!-- <fa-icon icon="clock" class="font-custome me-1"></fa-icon> -->
+                                                                        <!-- <fa-icon icon="fa-regular fa-circle-pause" class="font-custome me-1"></fa-icon> -->
+                                                             <!-- Start time:
+                                                        </b>&nbsp;&nbsp;&nbsp;
+
+                                                        <b>
+                                                                End time:
+                                                        </b><br/><br/><br/><br/>
+
+                                                        <b> 
+                                                                Duration:
+                                                         </b> -->
+                                                    </div>
+
+                                    
+
+                                                    <div *ngIf="isEditTable" id="verify" style="width:5rem"
+                                                        class="d-flex justify-content-center align-items-center">
+                                                                        <!-- <fa-icon icon="pen-to-square" style="cursor: pointer;"></fa-icon> -->
+                                                        <div *ngIf="!d.violation_verificaton_status;else verified">
+                                                            <div class="form-check form-check-inline" id="right">
+                                                                <input type="radio" [value]=0
+                                                                     (change)="VerifyTrueViol($event,d)"
+                                                                    [defaultValue]=true id="yes"
+                                                                    class="form-check-input">
+
+                                                                    <label for="yes"
+                                                                        class="form-check-label text-success">Yes
+                                                                    </label>
+                                                            </div>
+                                                            <div class="form-check form-check-inline" id="wrong">
+                                                                    <input type="radio" [value]=false
+                                                                        (change)="VerifyFalseViol($event,d)"
+                                                                        [defaultValue]=false id="no"
+                                                                        class="form-check-input">
+
+                                                                        <label for="no" class="form-check-label text-danger">No
+                                                                        </label>
+                                                            </div>
+                                                        </div>
+
+
+                                                        <ng-template #verified>
+                                                            <div class="success-badge w-full mt-3">Verified</div>
+                                                        </ng-template>
+
+                                                    </div>
+                                                    <!-- <div>
+                                                        
+                                                    </div> -->
+
+
+                                                    <div class="d-flex justify-content-center align-items-center">
+                                                        <div>
+                                                            <div class="btn" (click)="IsDeleteData(deleteModal,d)">
+                                                                <fa-icon icon="trash" class="text-danger"></fa-icon>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                </div>
+                                            </ng-template>
+                                        </ng-container>
+                                    </ngb-carousel>
+                                </div>
+                            </ng-container>
+                        </div>
+                
+                    
+
+                    
+                    <div class="d-flex mx-auto justify-content-center p-1">
+                        <ngb-pagination [collectionSize]="total|async" [(page)]="page" [pageSize]="pageSize"
+                            style="width: 95vw;overflow-x: auto;" (pageChange)="sliceVD()">
+                        </ngb-pagination>
+                    </div>
 
                 </div>
-           </div>
+
+
+            </div>
         </div>
     </div>
 
-
-
-
-
-
 </div>
+
+
+<ng-template #noData>
+    <div class="row card card-body" id="data-card">
+        <div class="d-flex justify-content-center align-items-center" *ngIf="dataFetchStatus=='success'">
+            <h4> No violation details found</h4>
+        </div>
+        <div class="d-flex justify-content-center align-items-center" *ngIf="dataFetchStatus=='init'">Loading...
+        </div>
+        <div class="d-flex justify-content-center align-items-center" *ngIf="dataFetchStatus=='Error'">Error
+            while fetching data</div>
+
+    </div>
+</ng-template>
+
+<ng-template let-modal #deleteModal>
+    <div class="modal-body">
+        <div class="modal-confirm">
+            <div class="modal-content">
+                <div class="modal-header flex-column">
+                    <div class="icon-box">
+                        <i class="material-icons">&#xE5CD;</i>
+                    </div>
+                    <h4 class="modal-title w-100">Are you sure?</h4>
+                    <!-- <button type="button" class="btn"  aria-hidden="true">&times;</button> -->
+                </div>
+                <div class="modal-body">
+                    <p>Do you really want to delete this violation Details? This process cannot be undone.
+                    </p>
+                </div>
+                <div class="modal-footer justify-content-center">
+                    <button type="button" class="btn btn-secondary" (click)="modal.close('Cross click')"
+                        data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn danger" (click)="DeleteViolationData()">Delete</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</ng-template>
