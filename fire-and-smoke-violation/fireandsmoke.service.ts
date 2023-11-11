@@ -18,11 +18,12 @@ export class FireandsmokeService {
   jobsheetInterval:number
   logInterval:number
   //isCollapse:Subject<boolean>=new Subject()
+
   constructor
   (public http:HttpClient,
-    public   snackbar:MatSnackBar
-,
-    public datePipe:DatePipe) {
+  public   snackbar:MatSnackBar,
+  public datePipe:DatePipe)
+   {
   var res=this.loadConfigFile('assets/config.json')
   console.log(res)
   res=JSON.parse(res)

@@ -260,7 +260,7 @@
 
                         <div class="">
                             <div class="header" style="overflow: auto;">
-                                <div scope="col" class="d-flex align-items-center justify-centent-center">
+                                <div scope="col" class="d-flex align-items-center justify-content-center">
                                     <div>
                                         <b>SNo</b>
                                     </div>
@@ -271,7 +271,7 @@
                                     <div>
                                         <b>
                                             <!-- <fa-icon icon="image" class="font-custome me-1"></fa-icon> -->
-                                            Image
+                                            Video
                                         </b>
                                     </div>
                                 </div>
@@ -315,11 +315,14 @@
                                     </b>
                                 </div>
 
-                                <div scope="col" class="d-flex justify-content-center align-items-center">
+                                <!-- <div scope="col" class="d-flex justify-content-center align-items-center">
                                     <b> 
                                         Preset
                                     </b>
-                                </div>
+                                </div> -->
+                                <!-- <div scope="col" class="d-flex justify-content-center align-items-center">
+                                    
+                                </div> -->
                                 <div></div>
                             
                             </div>
@@ -335,11 +338,11 @@
 
                                                     <div class="d-flex justify-content-center align-items-center">
                                                         <div class = "column-flex">
-                                                            <video width="320" controls>
+                                                            <video width="250" controls>
                                                                 <source src = "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4"  type="video/mp4">
                                                                             <!-- <iframe width="560" height="315" src="https://www.youtube.com/embed/WrQwVqN6Jlo" frameborder="0" allowfullscreen></iframe> -->
                                                                             <!-- <source src = "https://www.w3schools.com/html/mov_bbb.mp4"  type="video/mp4"> -->
-                                                            </video><br/>
+                                                            </video><br/>&nbsp;&nbsp;&nbsp;
 
                                                             <button class="btn btn-sm default text-white mt-2"> 
                                                                 <a (click)="downloadVideo()" >Download Video</a>
@@ -429,13 +432,14 @@
                                                                     </label>
                                                             </div>
                                                             <div class="form-check form-check-inline" id="wrong">
-                                                                    <input type="radio" [value]=false
+                                                                <input type="radio" [value]=false
                                                                         (change)="VerifyFalseViol($event,d)"
                                                                         [defaultValue]=false id="no"
                                                                         class="form-check-input">
 
-                                                                        <label for="no" class="form-check-label text-danger">No
-                                                                        </label>
+                                                                    <label for="no" 
+                                                                    class="form-check-label text-danger">No
+                                                                    </label>
                                                             </div>
                                                         </div>
 
@@ -445,7 +449,8 @@
                                                         </ng-template>
 
                                                     </div>
-                                                    <!-- <div>
+                                                    
+                                                    <!-- <div class="d-flex justify-content-center align-items-center">
                                                         
                                                     </div> -->
 
