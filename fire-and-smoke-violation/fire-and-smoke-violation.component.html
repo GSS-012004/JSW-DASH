@@ -20,14 +20,6 @@
         </div>
 
 
-                        <!-- <div class="col-xl-2 col-xs-12 col-sm-12 col-md-6 col-lg-6 mb-3">
-                            <div class="row">
-                                        <p-treeSelect  containerStyleClass="w-full" [(ngModel)]="selectedViolation"  [ngModelOptions]=" 
-                                        {standalone: true}" [options]="violationTypeList|async" (onNodeSelect)="onViolationTypeSelect($event)"  placeholder="Select Violation"></p-treeSelect>
-                                    </div>
-                                    </div> -->
-
-
         <div class="col-xl-2 col-xs-12 col-sm-12 col-md-6 col-lg-6">
             <div class="row" id="filter">
                 <p-treeSelect containerStyleClass="w-full" [ngModelOptions]=" 
@@ -36,31 +28,14 @@
                      placeholder="Select Camera"></p-treeSelect>
             </div>
         </div>
-
-
-                         <!-- <div class="col-xl-3 col-sm-12 col-lg-12 col-xs-12 col-md-12 mb-3">
-                                    <button class="btn default text-white me-3 ms-1" style="width:80px">
-                                <span>Submit</span>
-                                    <span class="spinner-border spinner-border-sm"   ></span> -->
-                                    <!-- </button>&nbsp;
-                                    <button type="submit" class="btn default text-white me-3">
-                                        <fa-icon icon="download" class="ms-1 me-1" style="cursor: pointer;" ></fa-icon>
-                                        <span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"
-                                        ></span> -->
-                                        <!-- Excel 
-                                    </button>&nbsp;
-                                </div>  -->
-
-
-
+        
+    
         <div class="col-xl-3 col-sm-12 col-lg-12 col-xs-12 col-md-12">
             <button class="btn default text-white me-3 ms-1" style="width:80px" (click)="Submit()" style="width:80px"
                 [disabled]="(selectedMoments.startDate===null || selectedMoments.endDate===null)"><span
                 *ngIf="!loading">Submit</span>
                 <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" *ngIf="loading"></span>
             </button>&nbsp;
-
-
 
             <button type="submit" class="btn default text-white me-3" (click)="submitForm()"
                  [disabled]="(selectedMoments.startDate===null || selectedMoments.endDate===null)||excelLoad">
@@ -69,15 +44,10 @@
                 *ngIf="excelLoad"></span> Excel
            </button>&nbsp;
         </div>
-
-
-
-
-
-       
-            <div class="col-xl-3 col-sm-12 col-lg-6 col-xs-12 col-md-6">
+    
+    
+        <div class="col-xl-3 col-sm-12 col-lg-6 col-xs-12 col-md-6">
                 <div class="float-end">
-                                <!-- <div class="col-xl-2 co mel-sm-4 col-lg-4 col-xs-4 col-md-4 mb-3"> -->
                     <button class="btn default text-white" *ngIf="isdatewise || isLatest" (click)="BackToToday()"
                         style="width:100px">
                         <fa-icon icon="chart-area" *ngIf="!loader2" class="text-white me-2"></fa-icon>
@@ -92,6 +62,7 @@
     </div>
 
 
+
     <div class="row">
         <div class="">
             <div class="d-flex flex-row mb-2 mt-4 card p-2" id="data-card" style="border-radius:7px !important;">
@@ -103,6 +74,7 @@
                         <fa-icon icon="filter"></fa-icon>
                     </div>
                 </div>
+
                 <div class="col-10 ">
                     <div class="row d-flex align-items-center">
                         <span class="col-2">
@@ -137,7 +109,8 @@
 
                             <button class="btn default text-white me-3 ms-1" style="width:80px" (click)="Submit()"
                                 style="width:80px"
-                                [disabled]="(selectedMoments.startDate===null || selectedMoments.endDate===null)"><span
+                                [disabled]="(selectedMoments.startDate===null || selectedMoments.endDate===null)">
+                                <span
                                 *ngIf="!loading">Submit</span>
                                 <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"
                                 *ngIf="loading"></span>
@@ -152,7 +125,6 @@
                             </button>&nbsp;
 
                             <div class="float-end">
-                                <!-- <div class="col-xl-2 co mel-sm-4 col-lg-4 col-xs-4 col-md-4 mb-3"> -->
                                 <button class="btn default text-white" *ngIf="isdatewise || isLatest"
                                     (click)="BackToToday()" style="width:100px">
                                     <fa-icon icon="chart-area" *ngIf="!loader2" class="text-white me-2"></fa-icon>
@@ -161,6 +133,7 @@
                                         *ngIf="loader2"></span>
                                 </button>
                             </div>
+
                         </div>
 
                     </div>
@@ -172,15 +145,7 @@
     <!-- ============================================================== -->
     <!-- END OF INPUTS -->
     <!-- ============================================================== -->
-
-
-
-
     
-
-
-
-
     <!-- ============================================================== -->
     <!-- DATA TABLE -->
     <!-- ============================================================== -->
@@ -188,38 +153,10 @@
     <div class="row">
         <div class="col-12">
             <div class="card" id="data-card">
-                                                        <!-- <div class="card-header"> -->
-                                                            <!-- Violation Data -->
 
-
-
-                                                            <!-- <div class="container">
-                                                                <div class="row">
-                                                                    <div class="col-md-12">
-                                                                        <div class="centered-container" > -->
-
-
-
-                                                                    <!-- <button class="btn default-outline me-2 float-start"  style="width:7%"
-                                                                        placement="bottom" >
-                                                                    <fa-icon icon="bell"  class="me-1 me-md-2"></fa-icon>
-                                                                        <fa-icon icon="bell-slash"  class="me-1"></fa-icon>
-                                                                    </button>&nbsp;
-                                                                    <button class="btn default-outline float-start me-2"  style="width:7%"
-                                                                        placement="bottom" >
-                                                                    <fa-icon icon="volume-up"  class="me-1 me-md-2"></fa-icon>
-                                                                        <fa-icon icon="volume-off"  class="me-1"></fa-icon>
-                                                                    </button>&nbsp; -->
-
-
-
-
-                               
-
-
-
-                <div class="mt-3 mb-2">
+                 <div class="mt-3 mb-2">
                     <div class="form-group">
+
                         <div class="">
                             <button *ngIf="!isdatewise" (click)=getLatestData()
                                     class="btn default ms-3 me-2 text-white float-start">
@@ -277,15 +214,6 @@
                                 </div>
 
                                 <div scope="col" class="d-flex justify-content-center align-items-center">
-                                    <!-- <fon Dea-icon icon="camera-retro" class="font-custome me-1"></fa-icon> -->
-                                    <div>
-                                        <b>
-                                            Violation Details
-                                        </b>
-                                    </div>
-                                </div>
-
-                                <div scope="col" class="d-flex justify-content-center align-items-center">
                                     <div>
 
                                         <b>
@@ -294,9 +222,6 @@
                                         </b>
                                     </div>
                                 </div>
-                                        <!-- <th scope="col"><b>
-                                                <fa-icon icon="laptop" class="font-custome me-1"></fa-icon>Device Name
-                                            </b></th> -->
 
                                 <div scope="col" class="d-flex justify-content-center align-items-center">
                                     <b>
@@ -304,12 +229,28 @@
                                         Detected Time
                                     </b>
                                 </div>
+
+                                <div scope="col" class="d-flex justify-content-center align-items-center">
+                                    <!-- <fon Dea-icon icon="camera-retro" class="font-custome me-1"></fa-icon> -->
+                                    <div>
+                                        <b>
+                                            Location
+                                        </b>
+                                    </div>
+                                </div>
+
+                                
+                                        <!-- <th scope="col"><b>
+                                                <fa-icon icon="laptop" class="font-custome me-1"></fa-icon>Device Name
+                                            </b></th> -->
+
+                               
                                         <!-- <th scope="col"><b>
                                             <fa-icon icon="clock" class="font-custome me-1"></fa-icon>Exit Time
                                         </b></th> -->
 
                                 <div *ngIf="isEditTable" class="d-flex justify-content-center align-items-center"
-                                    scope="col">
+                                    scope="col" style="padding-left:2rem">
                                     <b>
                                         Is Valid?
                                     </b>
@@ -327,27 +268,29 @@
                             
                             </div>
                             
-                            <ng-container *ngFor="let data of violData|async;let i=index" style="text-align: center;">
+                            <ng-container *ngFor="let data of violData|async;let i=index" style="justify-content: center;">
                                 <div>
                                     <ngb-carousel>
                                         <ng-container *ngFor="let d of data.data.reverse();let in=index">
                                             <ng-template ngbSlide>
                                                 <div class="data-wrapper p-2">
 
-                                                    <div>{{data.SNo}}.{{in+1}}</div>
+                                                    <div class="d-flex justify-content-center align-items-center">
+                                                        <div class = "column-flex" style= padding-left:2rem>{{data.SNo}}.{{in+1}}</div></div>
 
                                                     <div class="d-flex justify-content-center align-items-center">
                                                         <div class = "column-flex">
-                                                            <video width="250" controls>
+                                                            <video width="300" controls>
                                                                 <source src = "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4"  type="video/mp4">
                                                                             <!-- <iframe width="560" height="315" src="https://www.youtube.com/embed/WrQwVqN6Jlo" frameborder="0" allowfullscreen></iframe> -->
                                                                             <!-- <source src = "https://www.w3schools.com/html/mov_bbb.mp4"  type="video/mp4"> -->
-                                                            </video><br/>&nbsp;&nbsp;&nbsp;
-
-                                                            <button class="btn btn-sm default text-white mt-2"> 
-                                                                <a (click)="downloadVideo()" >Download Video</a>
+                                                            </video><br/>
+                                                    <div style=" padding-left: 5rem;">
+                                                            <button class="btn btn-sm default text-white mt-2" > 
+                                                                <a (click)="downloadVideo()">Download Video</a>
                                                                 <fa-icon icon="download" class="ms-1 me-1" style="cursor: pointer;"></fa-icon>
                                                             </button>
+                                                        </div>
                                                        </div>
                                                     </div>
 
@@ -363,7 +306,7 @@
 
 
 
-                                                                            <div class="d-flex justify-content-center align-items-center">
+                                                                            <!-- <div class="d-flex justify-content-center align-items-center">
                                                                                 <div>
                                                                                     <div *ngFor="let object of d.object_data;let in=index"
                                                                                         ngClass="in!= (d.object_data.length-1) ? 'border-bottom':''">
@@ -388,7 +331,7 @@
                                                                                         </div>
                                                                                     </div>
                                                                                 </div>
-                                                                            </div>
+                                                                            </div> -->
 
 
                                     
@@ -414,13 +357,17 @@
                                                                 Duration:
                                                          </b> -->
                                                     </div>
+                                                    <div class="d-flex justify-content-center align-items-center"   style= padding-right:2rem>
+                                                        hii
+                                                    </div>
 
                                     
-
-                                                    <div *ngIf="isEditTable" id="verify" style="width:5rem"
-                                                        class="d-flex justify-content-center align-items-center">
+                                               <div  class="d-flex justify-content-center align-items-center">
+                                                <div class = "column-flex">
+                                                    <div *ngIf="isEditTable" id="verify" style="width:5rem" >
                                                                         <!-- <fa-icon icon="pen-to-square" style="cursor: pointer;"></fa-icon> -->
                                                         <div *ngIf="!d.violation_verificaton_status;else verified">
+
                                                             <div class="form-check form-check-inline" id="right">
                                                                 <input type="radio" [value]=0
                                                                      (change)="VerifyTrueViol($event,d)"
@@ -431,16 +378,18 @@
                                                                         class="form-check-label text-success">Yes
                                                                     </label>
                                                             </div>
-                                                            <div class="form-check form-check-inline" id="wrong">
-                                                                <input type="radio" [value]=false
-                                                                        (change)="VerifyFalseViol($event,d)"
-                                                                        [defaultValue]=false id="no"
-                                                                        class="form-check-input">
 
-                                                                    <label for="no" 
+
+                                                           
+                                                                <div class="form-check form-check-inline" id="wrong">
+                                                                
+                                                                <input type="radio" [value]=false (change)="VerifyFalseViol($event,d)"
+                                                                        [defaultValue]=false id="no"
+                                                                        class="form-check-input" style="padding-left:1rem"><label for="no" 
                                                                     class="form-check-label text-danger">No
                                                                     </label>
                                                             </div>
+                                                            
                                                         </div>
 
 
@@ -449,11 +398,10 @@
                                                         </ng-template>
 
                                                     </div>
+                                                </div>
+                                                </div>   
                                                     
-                                                    <!-- <div class="d-flex justify-content-center align-items-center">
-                                                        
-                                                    </div> -->
-
+                                               
 
                                                     <div class="d-flex justify-content-center align-items-center">
                                                         <div>
@@ -464,6 +412,7 @@
                                                     </div>
 
                                                 </div>
+                                            
                                             </ng-template>
                                         </ng-container>
                                     </ngb-carousel>

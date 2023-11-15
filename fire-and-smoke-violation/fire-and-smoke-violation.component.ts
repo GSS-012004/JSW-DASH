@@ -13,7 +13,7 @@ import { saveAs } from 'file-saver';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Moment } from 'moment';
 import { DaterangepickerDirective } from 'ngx-daterangepicker-material';
- import dayjs from 'dayjs/esm';
+import dayjs from 'dayjs/esm';
 import { FireandsmokeService } from './fireandsmoke.service';
 // import * as dayjs from 'dayjs'
 
