@@ -4,7 +4,6 @@
   height: 174px;
   width: 330px;
   object-fit:cover;
-
   border-radius: 5px 5px 5px  5px !important;
 }
 
@@ -14,6 +13,7 @@
   padding:0 25px;
   position: relative;
 }
+
 .task-input input{
 padding: 5px 35px 5px 5px;
 height:40px ;
@@ -24,10 +24,12 @@ display: flex;
 justify-content: center;
 align-items: center; 
 }
+
 .datePickerContainer input{
 border-top-right-radius: 0px !important;
 border-bottom-right-radius: 0px !important;
 }
+
 input{
 width:100%;
 }
@@ -53,7 +55,6 @@ width: 20px;
 }
 
 input[type='checkbox'] {
-
 display: block;
 height: 30px;
 margin: 0 0 -53px -9999px;
@@ -66,7 +67,7 @@ counter-increment: undone-items;
 input:checked {
 pointer-events: none;
 order: 2;
-counter-increment: done-items;  
+counter-increment: done-items;
 }
 
 label {
@@ -117,20 +118,21 @@ content: '\2716'; /* circle checkmark */
 text-align: center ;
 align-content: center;
 }
+
 td{
 text-align: center !important;
 align-content: center !important;
 /* margin-bottom: 2rem !important; */
 /* background-color: var(--base-light); */
 }
-input[type='radio'] {
 
+input[type='radio'] {
 display: block;
 height: 30px;
 margin: 0 0 -53px -9999px;
 order: 4;
 /* top: 5px; */
-padding-left:1rem;
+/* padding-left:1rem; */
 outline: none;
 position: relative;
 counter-increment: undone-items;
@@ -216,12 +218,13 @@ border:1px solid #ccc;
   margin: 0.5rem;
   padding:0.7rem;
 }
+
 .data-container .header{
   width:auto;
   display: grid;
   box-sizing: border-box;
-  /* margin: 1rem !important; */
-  /* box-sizing: content-box; */
+  margin: 1rem !important;
+  box-sizing: content-box;
   padding-right:2rem !important;
   padding-left: 2rem !important;
   padding-top: 1rem !important;
@@ -249,12 +252,13 @@ border:1px solid #ccc;
   margin-bottom: 1rem !important;
   overflow-wrap: break-word;
   border:var(--border);
-  border-radius: 100px;
+  border-radius: 10px;
   grid-template-columns: 5% 30% 20% 15% 15% 10% 5%;
   /* grid-template-columns: 5% 30% 20% 15% 15% 10% 5% 10%; */
 
 
 }
+
 
 ngb-pagination ::ng-deep ul > li:not(.active) > a {
   background-color:  #f8f8f8 !important;
@@ -268,7 +272,6 @@ ngb-pagination ::ng-deep ul > li:not(.active) > a {
   background-color: var(--label-color) !important;
   border-radius: 5px !important;
   border: 1px solid var(--label-color) !important;
-  
   box-shadow: none;
   
   }

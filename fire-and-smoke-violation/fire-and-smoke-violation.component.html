@@ -1,6 +1,6 @@
 <div class="container-fluid dashboard-content" #datatable  id="content">
     <div class="">
-        <h5>Fire and Smoke Violations</h5>
+        <h5>Fire Violations</h5>
     </div>
 
     <!-- ============================================================== -->
@@ -213,7 +213,7 @@
                                     </div>
                                 </div>
 
-                                <div scope="col" class="d-flex justify-content-center align-items-center">
+                                <div scope="col" class = "d-flex justify-content-center align-items-center">
                                     <div>
 
                                         <b>
@@ -342,22 +342,25 @@
 
 
                                                     <div class="d-flex justify-content-center align-items-center">
-                                                        {{d.timestamp|dateFormater}}
-                                                        <!-- <b> -->
+                                                        <div class = "column-flex"> <div>{{d.timestamp|dateFormater}}</div><br>
+                                                        <div>
+                                                       
                                                                         <!-- <fa-icon icon="clock" class="font-custome me-1"></fa-icon> -->
                                                                         <!-- <fa-icon icon="fa-regular fa-circle-pause" class="font-custome me-1"></fa-icon> -->
-                                                             <!-- Start time:
-                                                        </b>&nbsp;&nbsp;&nbsp;
+                                                            <u>Start time:</u> 
+                                                        <br><br>
 
-                                                        <b>
-                                                                End time:
-                                                        </b><br/><br/><br/><br/>
-
-                                                        <b> 
+                                                        
+                                                               <u>End time:</u> 
+                                                        
+                                                        <!-- <b> 
                                                                 Duration:
-                                                         </b> -->
+                                                        </b> -->
                                                     </div>
-                                                    <div class="d-flex justify-content-center align-items-center"   style= padding-right:2rem>
+                                                    </div>
+                                                    </div>
+
+                                                    <div class="d-flex justify-content-center align-items-center" style= padding-right:2rem>
                                                         hii
                                                     </div>
 
