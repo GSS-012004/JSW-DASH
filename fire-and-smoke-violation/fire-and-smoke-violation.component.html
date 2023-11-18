@@ -116,13 +116,13 @@
                                 *ngIf="loading"></span>
                             </button>&nbsp;
 
-                            <button type="submit" class="btn default text-white me-3" (click)="submitForm()"
+                            <!-- <button type="submit" class="btn default text-white me-3" (click)="submitForm()"
                                 [disabled]="(selectedMoments.startDate===null || selectedMoments.endDate===null)||excelLoad">
                                 <fa-icon icon="download" class="ms-1 me-1" style="cursor: pointer;"
                                 *ngIf="!excelLoad"></fa-icon>
                                 <span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"
                                 *ngIf="excelLoad"></span> Excel
-                            </button>&nbsp;
+                            </button>&nbsp; -->
 
                             <div class="float-end">
                                 <button class="btn default text-white" *ngIf="isdatewise || isLatest"
@@ -268,7 +268,7 @@
                             
                             </div>
                             
-                            <ng-container *ngFor="let data of violData|async;let i=index" style="justify-content: center;">
+                            <ng-container *ngFor="let data of violData|async;let i=index" style="justify-content: center;"> 
                                 <div>
                                     <ngb-carousel>
                                         <ng-container *ngFor="let d of data.data.reverse();let in=index">
@@ -280,14 +280,19 @@
 
                                                     <div class="d-flex justify-content-center align-items-center">
                                                         <div class = "column-flex">
-                                                            <video width="300" controls>
-                                                                <source src = "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4"  type="video/mp4">
-                                                                            <!-- <iframe width="560" height="315" src="https://www.youtube.com/embed/WrQwVqN6Jlo" frameborder="0" allowfullscreen></iframe> -->
-                                                                            <!-- <source src = "https://www.w3schools.com/html/mov_bbb.mp4"  type="video/mp4"> -->
-                                                            </video><br/>
+                                                            <video width="300" controls preload="none"  class="custom-video">
+                                                               <source  [src]="API +'/getFireVideo/'+d.video_file_name" type="video/mp4">
+                                                            </video>
+                                                            <!-- <video  width="50%" preload="none"  class="custom-video" controls>
+                                                                <source [src]="API +'/getFireVideo/'+d.video_file_name" type="video/mp4">
+                                    
+                                                            </video> -->
+                                                            <!-- [src] = "API +'/getFireVideo/'+d.video_file_name" -->
+                                                            
+                                                            <br/>
                                                     <div style=" padding-left: 5rem;">
                                                             <button class="btn btn-sm default text-white mt-2" > 
-                                                                <a (click)="downloadVideo()">Download Video</a>
+                                                                <a (click)="downloadVideo(API+'/getFireVideo/'+d.video_file_name)">Download Video</a>
                                                                 <fa-icon icon="download" class="ms-1 me-1" style="cursor: pointer;"></fa-icon>
                                                             </button>
                                                         </div>
@@ -342,16 +347,19 @@
 
 
                                                     <div class="d-flex justify-content-center align-items-center">
-                                                        <div class = "column-flex"> <div>{{d.timestamp|dateFormater}}</div><br>
+                                                        <div class = "column-flex">
+                                                             <!-- <div>{{d.timestamp|dateFormater}}</div><br> -->
                                                         <div>
                                                        
                                                                         <!-- <fa-icon icon="clock" class="font-custome me-1"></fa-icon> -->
                                                                         <!-- <fa-icon icon="fa-regular fa-circle-pause" class="font-custome me-1"></fa-icon> -->
-                                                            <u>Start time:</u> 
+                                                            Start time:<br>
+                                                            {{d.start_time|dateFormater}} 
                                                         <br><br>
 
                                                         
-                                                               <u>End time:</u> 
+                                                               End time:<br>
+                                                               {{d.stop_time|dateFormater}} 
                                                         
                                                         <!-- <b> 
                                                                 Duration:
@@ -361,7 +369,7 @@
                                                     </div>
 
                                                     <div class="d-flex justify-content-center align-items-center" style= padding-right:2rem>
-                                                        hii
+                                                       {{d.location}}
                                                     </div>
 
                                     

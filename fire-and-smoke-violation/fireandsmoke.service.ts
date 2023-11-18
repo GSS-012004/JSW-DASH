@@ -36,12 +36,13 @@ export class FireandsmokeService {
    this.logInterval=res.logInterval
 
   console.log(this.dashboardInterval)
+  console.log(this.logInterval)
   }
 
 
 
 GetCameraDetails(){
-    return this.http.get(this.IP+ '/camera_details')
+    return this.http.get(this.IP+ '/Firecameradetails')
  }
 
  dateTransform(date:Date){
@@ -49,7 +50,7 @@ GetCameraDetails(){
 
 }
 GetCameraNames(){
-  return this.http.get(this.IP+'/camera_details')
+  return this.http.get(this.IP+'/Firecameradetails')
 }
 
 LiveViolationData (cameraName?:string | null,violType?:string|null,page?:number,size?:number) {
@@ -82,11 +83,11 @@ DatewiseViolations(from: any, to: any, page?: number|null, size?: number|null, c
 
  violType!==null?body={from_date:fromD,to_date:toD,violation_type:violType}: body={from_date:fromD,to_date:toD}
   console.log(violType)
-  console.log(this.IP + '/datewise/' + cameraName + '/' + page + '/' + size)
-  return page && size && cameraName ? this.http.post(this.IP + '/datewise/' + cameraName + '/' + page + '/' + size, body): 
-   page && size && (!cameraName) && (!violType) ? this.http.post(this.IP + '/datewise/'+ page + '/' + size , body):
-   !page && !size &&cameraName &&!violType? this.http.post(this.IP + '/datewise/'+ cameraName, body):
-   this.http.post(this.IP + '/datewise',body)
+  console.log(this.IP + '/datewiseFiresmoke/' + cameraName + '/' + page + '/' + size)
+  return page && size && cameraName ? this.http.post(this.IP + '/datewiseFiresmoke/' + cameraName + '/' + page + '/' + size, body): 
+   page && size && (!cameraName) && (!violType) ? this.http.post(this.IP + '/datewiseFiresmoke/'+ page + '/' + size , body):
+   !page && !size &&cameraName &&!violType? this.http.post(this.IP + '/datewiseFiresmoke/'+ cameraName, body):
+   this.http.post(this.IP + '/datewiseFiresmoke',body)
 }
 
 
@@ -147,31 +148,31 @@ readConfigFile(filepath:any,mimeType:any){
 
 
  DeleteViolationData(id:any){
-  return this.http.get(this.IP+'/Deleteviolation/'+id)
+  return this.http.get(this.IP+'/DeleteFireViolation/'+id)
 }
 
 
-GetRiRoViolationData(data:any){
-  return  this.http.post(this.IP+'/riro_violation_data',data)
-}
+// GetRiRoViolationData(data:any){
+//   return  this.http.post(this.IP+'/riro_violation_data',data)
+// }
 
 VerifyViolation(id:string,flag:any){
-  return this.http.get(this.IP+'/violation_verification/'+id+'/'+flag)
+  return this.http.get(this.IP+'/FIRESMOKEverification/'+id+'/'+flag)
 }
 
-LiveRAViolationData (cameraName?:string | null,violType?:string|null,page?:number,size?:number) {
+// LiveRAViolationData (cameraName?:string | null,violType?:string|null,page?:number,size?:number) {
 
-  cameraName==="all_cameras"?cameraName=null:''
-  violType==="all_violations"?violType=null:''
+//   cameraName==="all_cameras"?cameraName=null:''
+//   violType==="all_violations"?violType=null:''
  
-  return page && size && cameraName && !violType? this.http.get(this.IP + '/live_data1RA' + cameraName + '/' + page + '/' + size): 
-  page && size && (!cameraName) && (!violType) ? this.http.get(this.IP + '/live_data1RA/pagination/'+ page +'/'+ size):
-  !page && !size &&cameraName && !violType? this.http.get(this.IP + '/live_data1RA/' + cameraName):
-  this.http.get(this.IP +'/live_data1RA')
+//   return page && size && cameraName && !violType? this.http.get(this.IP + '/live_data1RA' + cameraName + '/' + page + '/' + size): 
+//   page && size && (!cameraName) && (!violType) ? this.http.get(this.IP + '/live_data1RA/pagination/'+ page +'/'+ size):
+//   !page && !size &&cameraName && !violType? this.http.get(this.IP + '/live_data1RA/' + cameraName):
+//   this.http.get(this.IP +'/live_data1RA')
 
-}
+// }
 
-DatewiseRAViolations(from: any, to: any, page?: number|null, size?: number|null, cameraName?: string | null,violType?:string|null) {
+DatewiseFiresmokeViolations(from: any, to: any, page?: number|null, size?: number|null, cameraName?: string | null,violType?:string|null) {
   var fromD = this.dateTransform(from)
   var toD = this.dateTransform(to)
   console.log(fromD, toD)
@@ -184,12 +185,26 @@ DatewiseRAViolations(from: any, to: any, page?: number|null, size?: number|null,
 
  violType!==null?body={from_date:fromD,to_date:toD,violation_type:violType}: body={from_date:fromD,to_date:toD}
   console.log(violType)
-  console.log(this.IP + '/datewiseRA/' + cameraName + '/' + page + '/' + size)
-  return page && size && cameraName ? this.http.post(this.IP +'/datewiseRA/'+ cameraName + '/' + page + '/' + size, body): 
-  page && size && (!cameraName) && (!violType) ? this.http.post(this.IP + '/datewiseRA/'+ page + '/' + size , body):
-  !page && !size &&cameraName &&!violType? this.http.post(this.IP + '/datewiseRA/' + cameraName, body):
-  this.http.post(this.IP + '/datewiseRA', body)
+  console.log(this.IP + '/datewisefiresmoke/' + cameraName + '/' + page + '/' + size)
+  return page && size && cameraName ? this.http.post(this.IP +'/datewisefiresmoke/'+ cameraName + '/' + page + '/' + size, body): 
+  page && size && (!cameraName) && (!violType) ? this.http.post(this.IP + '/datewisefiresmoke/'+ page + '/' + size , body):
+  !page && !size &&cameraName &&!violType? this.http.post(this.IP + '/datewisefiresmoke/' + cameraName, body):
+  this.http.post(this.IP + '/datewisefiresmoke', body)
 
 }
+
+GetFireVideos(videoName?:string){
+  return this.http.get(this.IP+'/getFireVideo/'+videoName)
+}
+
+GetFiresmokeLiveViolation(){
+  return this.http.get(this.IP+'/FiresmokeLiveviolationdata')
+  }
+
+// VerifyFiresmokeViolation(){
+//   return this.http.get(this.IP+'/FIRESMOKEverification/'+id+'/'+flag)
+
+// }
+
 
 }

@@ -118,9 +118,9 @@ export class FireAndSmokeViolationComponent
    dataFetchStatus: string = 'init'
 
 
-    constructor(private http: HttpClient,
+    constructor(
+      private http: HttpClient,
       private webServer: FireandsmokeService,
-      // private webServer: ServerService,
      
       private datepipe: DatePipe,
       private toasterService: ToastrService,
@@ -130,6 +130,7 @@ export class FireAndSmokeViolationComponent
       private snackbar: MatSnackBar,
       public modalService: NgbModal,
       public Router: Router,
+      public ngbCarousal: NgbCarouselConfig
      )
      {
        this.API = webServer.IP
@@ -140,11 +141,17 @@ export class FireAndSmokeViolationComponent
       localStorage.getItem('audioOff') == 'true' ? this.audioOff = true : this.audioOff = false
       localStorage.getItem('alert') == 'true' ? this.alert = true : this.alert = false
       console.log(localStorage.getItem('audioOff'), localStorage.getItem('alert'))
+      
       this.delay = this.webServer.logInterval
       console.log(this.relayDelay)
       this.hooterDelay = this.webServer.delay
       this.getCameraList()
       this.getViolationTypes()
+      this.ngbCarousal.showNavigationArrows = true
+      this.ngbCarousal.showNavigationIndicators = true
+      this.ngbCarousal.interval=2000000000
+      //  this.ngbCarousal.
+      
      }
 
     // selectedMoments: { startDate: Moment, endDate: Moment } = { startDate:null,endDate:null};
@@ -403,7 +410,7 @@ ngOnInit(): void {
 
 
   if (!this.latest || this.isLatest) {
-    this.webServer.LiveRAViolationData().subscribe((Rdata: any) => {
+    this.webServer.GetFiresmokeLiveViolation().subscribe((Rdata: any) => {
       if (Rdata.success) {
 
         table?.classList.remove('loading')
@@ -766,7 +773,7 @@ Submit() {
         if (Number(localStorage.getItem("updatedLen"))) {
           this.violLength = Number(localStorage.getItem("updatedLen"))
         }
-        this.Subsciption = this.webServer.LiveRAViolationData(this.selectedCameraId, this.selectedViolType).subscribe((Rdata: any) => {
+        this.Subsciption = this.webServer.GetFiresmokeLiveViolation().subscribe((Rdata: any) => {
           // console.log(Rdata)
           this.dataFetchStatus = 'success'
 
@@ -814,7 +821,7 @@ Submit() {
         }
         )
         if (!this.latest) {
-          this.webServer.LiveRAViolationData().subscribe((Response: any) => {
+          this.webServer.GetFiresmokeLiveViolation().subscribe((Response: any) => {
             if (!this.latest) {
               if (Response.success === true) {
                 console.log(Response)
@@ -1044,22 +1051,43 @@ Submit() {
 
   // }
 
-  downloadVideo() {
-    const videoUrl = 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4';
+  downloadVideo(video:any) {
+    // const videoUrl = 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4';
+    const videoUrl = video;
 
-    fetch(videoUrl)
-      .then(response => response.blob())
-      .then(blob => {
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = 'video.mp4'; // Specify the desired filename
-        document.body.appendChild(a);
-        a.click();
-        window.URL.revokeObjectURL(url);
-      })
-      .catch(error => console.error('Error downloading video', error));
-      console.log("video download is tirggerd")
+    // fetch(videoUrl)
+    //   .then(response => response.blob())
+    //   .then(blob => {
+    //     const url = window.URL.createObjectURL(blob);
+    //     const a = document.createElement('a');
+    //     a.href = url;
+    //     a.download = 'video.mp4'; // Specify the desired filename
+    //     document.body.appendChild(a);
+    //     a.click();
+    //     window.URL.revokeObjectURL(url);
+    //   })
+    //   .catch(error => console.error('Error downloading video', error));
+    //   console.log("video download is tirggerd")
+    
+    const requestOptions= {
+      headers :new HttpHeaders({
+        responseType:'blob',
+      }),
+      withCredentials:true
+    };
+    console.log(videoUrl)
+    const videoName = videoUrl.substr(videoUrl.lastIndexOf('/')+1);
+    console.log("video download is triggered")
+
+    this.http.get(videoUrl,{responseType:'blob'}).subscribe((d : any)=>{
+    console.log("video url data",d);
+    saveAs(d,videoName);
+    },
+    (err:any) =>{
+      console.log("error",err)
+    }
+    )
+
   }
 
 
@@ -1203,7 +1231,7 @@ Submit() {
     table?.classList.add('loading')
 
     if (!this.latest || this.isLatest) {
-      this.webServer.LiveRAViolationData().subscribe((Rdata: any) => {
+      this.webServer.GetFiresmokeLiveViolation().subscribe((Rdata: any) => {
         if (Rdata.success) {
 
           table?.classList.remove('loading')
@@ -1282,7 +1310,7 @@ this.RefreshViolationData()      } else {
       var table = document.getElementById('dataTable')
       table?.classList.add('loading')
   
-      this.webServer.LiveRAViolationData().subscribe((Response: any) => {
+      this.webServer.GetFiresmokeLiveViolation().subscribe((Response: any) => {
         if (!this.latest) {
           table.classList.remove('loading')
           if (Response.success === true) {
@@ -1326,7 +1354,7 @@ this.RefreshViolationData()      } else {
 
     this.pageSize = 30
     this.page = 1
-    this.webServer.DatewiseRAViolations(this.fromDate, this.toDate, null, null, this.selectedCameraId ? this.selectedCameraId : null, this.selectedViolType ? this.selectedViolType : null).subscribe((Response: any) => {
+    this.webServer.DatewiseFiresmokeViolations(this.fromDate, this.toDate, null, null, this.selectedCameraId ? this.selectedCameraId : null, this.selectedViolType ? this.selectedViolType : null).subscribe((Response: any) => {
       this.dataFetchStatus = 'success'
       if (Response.success) {
         if (Response.message.length == 0) {
@@ -1340,7 +1368,7 @@ this.RefreshViolationData()      } else {
         if (Response.message.length > 0) {
           this.imageData = Response.message
           this.total = of(Response.message.length)
-          this.webServer.DatewiseRAViolations(this.fromDate, this.toDate, this.page, this.pageSize, this.selectedCameraId ? this.selectedCameraId : null, this.selectedViolType ? this.selectedViolType : null).subscribe((Response: any) => {
+          this.webServer.DatewiseFiresmokeViolations(this.fromDate, this.toDate, this.page, this.pageSize, this.selectedCameraId ? this.selectedCameraId : null, this.selectedViolType ? this.selectedViolType : null).subscribe((Response: any) => {
             if (Response.success) {
               table?.classList.remove('loading')
               // console.log(Response.message)
