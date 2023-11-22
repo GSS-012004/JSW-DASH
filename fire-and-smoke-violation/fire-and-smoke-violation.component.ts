@@ -1,6 +1,6 @@
 import { DatePipe } from '@angular/common';
 import { HttpClient, HttpHeaders, HttpResponse } from '@angular/common/http';
-import { Component, ElementRef, OnDestroy, OnInit, Query, ViewChild, ViewChildren } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, Query, ViewChild, ViewChildren } from '@angular/core';
 import { ServerService } from 'src/app/Services/server.service';
 import { Lightbox, LightboxConfig } from 'ngx-lightbox'
 import { Router } from '@angular/router';
@@ -8,14 +8,13 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Observable, of, startWith, Subscriber, Subscription, switchMap } from 'rxjs';
 import { IDropdownSettings } from 'ng-multiselect-dropdown';
 import { ToastrService } from 'ngx-toastr'
-import { ModalDismissReasons,NgbCarouselConfig, NgbDate, NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { ModalDismissReasons, NgbCarouselConfig, NgbDate, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { saveAs } from 'file-saver';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Moment } from 'moment';
 import { DaterangepickerDirective } from 'ngx-daterangepicker-material';
 import dayjs from 'dayjs/esm';
 import { FireandsmokeService } from './fireandsmoke.service';
-// import * as dayjs from 'dayjs'
 
 export interface violation {
   si_no?: string
@@ -29,713 +28,497 @@ var data: any[] = [];
   styleUrls: ['./fire-and-smoke-violation.component.css']
 })
 
-export class FireAndSmokeViolationComponent
- {
+export class FireAndSmokeViolationComponent implements OnInit, OnDestroy, AfterViewInit {
 
-    selectedCameraId: string | null = null
-    selectedItems: any
-    isdatewise: boolean = false;
-    page: number = 1
-    // selected : {start:any, end:any } ;
-    API: any ;
-    cameraDetails: any[] = [];
-    data: any[] = []
-    dropdownList: Observable<any[]> = of([])
-
-    ranges: any = {
+  selectedCameraId: string | null = null
+  selectedItems: any
+  isdatewise: boolean = false;
+  page: number = 1
+  // selected : {start:any, end:any } ;
+  API: any;
+  cameraDetails: any[] = [];
+  data: any[] = []
+  dropdownList: Observable<any[]> = of([])
+  isActive: boolean
+  ranges: any = {
     'Today': [dayjs().hour(0).minute(0).second(0), dayjs()],
     'Yesterday': [dayjs().subtract(1, 'days').hour(0).minute(0).second(0), dayjs().subtract(1, 'days')],
     'Last 7 Days': [dayjs().subtract(6, 'days').hour(0).minute(0).second(0), dayjs()],
     'Last 30 Days': [dayjs().subtract(29, 'days').hour(0).minute(0).second(0), dayjs()],
     'This Month': [dayjs().startOf('month').hour(0).minute(0).second(0), dayjs().endOf('month')],
     'Last Month': [dayjs().subtract(1, 'month').startOf('month').hour(0).minute(0).second(0), dayjs().subtract(1, 'month').endOf('month')]
-   }
-
-    fromDateControl: FormControl = new FormControl(new Date().getTime(), Validators.required)
-    toDateControl: FormControl = new FormControl(new Date(), Validators.required)
-    dropdownSettings!: IDropdownSettings
-    dropdownSettings2: any
-    violLength: number = 0
-    latest: boolean = false
-    isLatest: boolean = false
-    imageData: any[] = []
-    tempdata: any[] = [];
-    total: Observable<number> = of(0)
-    violData: Observable<any[]> = of([])
-
-    isdate: boolean = false
-    pageSize: number = 30
-    selectedViolType: string | null = null
-    fromDate: any = new Date()
-    toDate: any = new Date()
-
-    isalert: boolean = false
-    excelLoad: boolean = false
-    isExcel: boolean = false
-    selectedViolation!: any
-    selectedMoments: { startDate: Moment, endDate: Moment } = { startDate:null,endDate:null};
-    excelFromDate: FormControl = new FormControl(new Date(), Validators.required)
-    excelToDate: FormControl = new FormControl(new Date(), Validators.required)
-    ExcelRange: number
-    Edata: any[] = []
-    excelLoader: boolean = false
-    alertmessage: string = ''
-    loc2: FormControl = new FormControl('', Validators.required)
-
-    loading: boolean = false
-    images: any[] = []
-    interval2: any
-    Images: any[] = []
-    Subsciption!: Subscription
-    violdata: any[] = [];
-    alert: boolean = true
-    currentViol!: any
-
-    audioOff: boolean = false
-
-
-    violationTypeList: Observable<any[]> = of([{ key: '0', label: 'All Violations', icon: 'pi', data: 'all_violations' }])
-    interval: any
-    loader2: boolean = false
-    Excel: boolean = false
-    delay: number
-    violationsList: any[] = []
-    objectKeys = Object.keys
-    @ViewChild('dangerAlert') Violation: ElementRef<any>;
-    @ViewChildren(DaterangepickerDirective) pickerDirective: any;
-    editViol: any
-
-    relayDelay: number
-    hooterDelay: number
-
-    loaderLatest: boolean = false
-
-    currentDate:Date;
-    currentTime:Date;
-
-    isEditTable: boolean = true
-   
-   dataFetchStatus: string = 'init'
-
-
-    constructor(
-      private http: HttpClient,
-      private webServer: FireandsmokeService,
-     
-      private datepipe: DatePipe,
-      private toasterService: ToastrService,
-      private _lightbox: Lightbox,
-      private _lightBoxConfig: LightboxConfig,
-      private router: Router,
-      private snackbar: MatSnackBar,
-      public modalService: NgbModal,
-      public Router: Router,
-      public ngbCarousal: NgbCarouselConfig
-     )
-     {
-       this.API = webServer.IP
-       this.ExcelRange = 0
-
-
-
-      localStorage.getItem('audioOff') == 'true' ? this.audioOff = true : this.audioOff = false
-      localStorage.getItem('alert') == 'true' ? this.alert = true : this.alert = false
-      console.log(localStorage.getItem('audioOff'), localStorage.getItem('alert'))
-      
-      this.delay = this.webServer.logInterval
-      console.log(this.relayDelay)
-      this.hooterDelay = this.webServer.delay
-      this.getCameraList()
-      this.getViolationTypes()
-      this.ngbCarousal.showNavigationArrows = true
-      this.ngbCarousal.showNavigationIndicators = true
-      this.ngbCarousal.interval=2000000000
-      //  this.ngbCarousal.
-      
-     }
-
-    // selectedMoments: { startDate: Moment, endDate: Moment } = { startDate:null,endDate:null};
-
-    // @ViewChildren(DaterangepickerDirective) pickerDirective: any;
-    // editViol: any
-    // dropdownList: Observable<unknown>|Subscribable<unknown>|Promise<unknown>;
-
-    openDatePicker(event: any){
-      var dateInput = document.getElementById('dateInput')
-      dateInput.click()
-    }
-
-   onCameraIdSelect(event: any) {
-    this.isdatewise ? this.page = 1 : ''
-    this.selectedCameraId =  this.selectedItems.data
-    console.log(this.selectedItems)
-    console.log(event)
-    }
-
-    //   ngOnDestroy() {
-    //     this.modalService.dismissAll()
-    //     clearInterval(this.interval)
-    //     clearInterval(this.interval2)
-    //     this.isalert = false
-
-    //     this.toasterService.clear()
-
-    //   }
-//   getCameraList() {
-//     var cameralist: any[] = []
-//     var cameraIdList: any[] = []
-
-//     cameralist[0] = { key: '0', label: 'All Cameras', data: 'all_cameras' }
-
-
-//   this.webServer.GetCameraNames().subscribe((data: any) => {
-//     console.log(data)
-//     if (data.success === true) {
-
-//       data.message.forEach((el: any, i: number) => { this.cameraDetails[i] = { camera_id: el.camera_id, camera_name: el.camera_name } })
-//       console.log(this.cameraDetails)
-
-//     }
-//     else {
-
-//     }
-//   })
-
-// }
-
-  getCameraList() {
-  var cameralist: any[] = []
-  var cameraIdList: any[] = []
-
-  cameralist[0] = { key: '0', label: 'All Cameras', data: 'all_cameras' }
-  this.webServer.GetCameraDetails().subscribe((data: any) => {
-    if (data.success === true) {
-      data.message.forEach((el: any, i: number) => {
-        cameraIdList.push({ cameraid: i, cameraname: el })
-      });
-      cameraIdList = cameraIdList.filter((el, i, a) => i === a.indexOf(el))
-      cameraIdList.forEach((element: any, i: number) => {
-        // cameralist[i + 1] = { item_id: element.cameraid, item_text: element.cameraname }
-        var obj;
-        obj = { key: ((i + 1).toString()), label: element.cameraname, data: element.cameraname }
-
-        cameralist.push(obj)
-      });
-
-
-      this.dropdownList = of(cameralist)
-    }
-
-  })
-
-}
-
-
-
-
-
-// ngOnInit(): void {
-//   this.getCameraList();
-//   this.currentDate = new Date();
-//   setInterval(() => {
-//     this.currentTime = new Date();
-//     //  this.currentTime = new Time();
-// //this. getViolationTypes();
-
-//   }, 1000);
- 
-//   var fromDate = this.webServer.dateTransform(new Date()) + ' ' + '00:00:00'
-//   var toDate = this.webServer.dateTransform(new Date()) + ' ' + '23:59:59'
-//   this.fromDateControl.setValue(fromDate)
-//   this.toDateControl.setValue(toDate)
-
-//   this.dropdownSettings = {
-//     singleSelection: true,
-//     idField: 'item_id',
-//     textField: 'item_text',
-//     // selectAllText: 'Select All',
-//     // unSelectAllText: 'UnSelect All',
-//     itemsShowLimit: 1,
-//     allowSearchFilter: true,
-//     // closeDropDownOnSelection: true,
-//     // noDataAvailablePlaceholderText: 'No cameras detected',
-//     // maxHeight: 197
-//   };
-
-
-
-
-
-
-
-
-//   this.dropdownSettings2 = {
-//     singleSelection: true,
-//     idField: 'item_id',
-//     textField: 'item_text',
-
-//     itemsShowLimit: 1,
-//     allowSearchFilter: true,
-//     closeDropDownOnSelection: true,
-//     noDataAvailablePlaceholderText: 'No violation types detected',
-//     maxHeight: 197
-//   };
-
-
-
-
-
-
-//   //...........Reading previous violation data's length from local storage....
-//   this.violLength = Number(localStorage.getItem("updatedLen"))
-
-
-
-//   //------------Reading the camera details--------------
-//   //uncomment while you work
-//   this.webServer.GetCameraNames().subscribe((data: any) => {
-//     console.log('data',data)
-//     if (data.success === true) {
-
-//       data.message.forEach((el: any, i: number) => { this.cameraDetails[i] = { camera_id: el.camera_id, camera_name: el.camera_name } })
-//       console.log(this.cameraDetails)
-
-//     }
-//     else {
-
-//     }
-//   })
-//   var table = document.getElementById('dataTable')
-//   table?.classList.add('loading')
-
-
-//   if (!this.latest || this.isLatest) {
-//     this.webServer.LiveViolationData().subscribe((Rdata: any) => {
-//       if (Rdata.success) {
-
-//         table?.classList.remove('loading')
-
-//         var data = Rdata.message
-//         console.log('rdata',data)
-//         this.imageData = Rdata.message
-//         this.tempdata = Rdata.message
-//         Number(localStorage.setItem("updatedLen", Rdata.message.length ? Rdata.message.length : 0))
-//         this.tempdata = Rdata.message
-//         this.total = of(this.tempdata.length)
-//         this.violData = of(Rdata.message)
-//         // console.log(this.violData)
-//         this.sliceVD()
-//       }
-//       else {
-//         table?.classList.remove('loading')
-//         this.notification(Rdata.message)
-//       }
-//     },
-//       err => {
-//         table?.classList.remove('loading')
-
-//         this.notification("Error While fetching the data")
-//       })
-
-
-//   }
-
-
-
-// }
-
-
-
-
-
-
-
-
-
-
-
-ngOnInit(): void {
-
-  var fromDate = this.webServer.dateTransform(new Date()) + ' ' + '00:00:00'
-  var toDate = this.webServer.dateTransform(new Date()) + ' ' + '23:59:59'
-  this.fromDateControl.setValue(fromDate)
-  this.toDateControl.setValue(toDate)
-
-  this.dropdownSettings = {
-    singleSelection: true,
-    idField: 'item_id',
-    textField: 'item_text',
-    // selectAllText: 'Select All',
-    // unSelectAllText: 'UnSelect All',
-    itemsShowLimit: 1,
-    allowSearchFilter: true,
-    // closeDropDownOnSelection: true,
-    // noDataAvailablePlaceholderText: 'No cameras detected',
-    // maxHeight: 197
-  };
-
-  this.dropdownSettings2 = {
-    singleSelection: true,
-    idField: 'item_id',
-    textField: 'item_text',
-
-    itemsShowLimit: 1,
-    allowSearchFilter: true,
-    closeDropDownOnSelection: true,
-    noDataAvailablePlaceholderText: 'No violation types detected',
-    maxHeight: 197
-  };
-
-  //...........Reading previous violation data's length from local storage....
-  this.violLength = Number(localStorage.getItem("updatedLen"))
-
-
-
-  //------------Reading the camera details--------------
-  //uncomment while you work
-  this.webServer.GetCameraNames().subscribe((data: any) => {
-    console.log(data)
-    if (data.success === true) {
-
-      data.message.forEach((el: any, i: number) => { this.cameraDetails[i] = { camera_id: el.camera_id, camera_name: el.camera_name } })
-      console.log(this.cameraDetails)
-
-    }
-    else {
-
-    }
-  })
-  var table = document.getElementById('dataTable')
-  table?.classList.add('loading')
-
-
-  if (!this.latest || this.isLatest) {
-    this.webServer.GetFiresmokeLiveViolation().subscribe((Rdata: any) => {
-      if (Rdata.success) {
-
-        table?.classList.remove('loading')
-
-        var data = Rdata.message
-
-        this.imageData = Rdata.message
-        this.tempdata = Rdata.message
-        Number(localStorage.setItem("updatedLen", Rdata.message.length ? Rdata.message.length : 0))
-        this.tempdata = Rdata.message
-        this.total = of(this.tempdata.length)
-        this.violData = of(Rdata.message)
-        // console.log(this.violData)
-        this.sliceVD()
-      }
-      else {
-        table?.classList.remove('loading')
-        this.notification(Rdata.message)
-      }
-    },
-      err => {
-        table?.classList.remove('loading')
-
-        this.notification("Error While fetching the data")
-      })
-
-
   }
 
+  fromDateControl: FormControl = new FormControl(new Date().getTime(), Validators.required)
+  toDateControl: FormControl = new FormControl(new Date(), Validators.required)
+  dropdownSettings!: IDropdownSettings
+  dropdownSettings2: any
+  violLength: number = 0
+  latest: boolean = false
+  isLatest: boolean = false
+  imageData: any[] = []
+  tempdata: any[] = [];
+  total: Observable<number> = of(0)
+  violData: Observable<any[]> = of([])
+
+  isdate: boolean = false
+  pageSize: number = 30
+  selectedViolType: string | null = null
+  fromDate: any = new Date()
+  toDate: any = new Date()
+
+  isalert: boolean = false
+  excelLoad: boolean = false
+  isExcel: boolean = false
+  selectedViolation!: any
+  selectedMoments: { startDate: Moment, endDate: Moment } = null
+  excelFromDate: FormControl = new FormControl(new Date(), Validators.required)
+  excelToDate: FormControl = new FormControl(new Date(), Validators.required)
+  ExcelRange: number
+  Edata: any[] = []
+  excelLoader: boolean = false
+  alertmessage: string = ''
+  loc2: FormControl = new FormControl('', Validators.required)
+
+  loading: boolean = false
+  images: any[] = []
+
+  Images: any[] = []
+  Subsciption!: Subscription
+  violdata: any[] = [];
+  alert: boolean = true
+  currentViol!: any
+
+  audioOff: boolean = false
 
 
-}
-notification(message: string, action?: string) {
-  this.snackbar.open(message, action ? action : '', ({
-    duration: 4000, panelClass: ['error'],
-    horizontalPosition: 'end',
-    verticalPosition: 'bottom',
-  })
-  )
-}
+  violationTypeList: Observable<any[]> = of([{ key: '0', label: 'All Violations', icon: 'pi', data: 'all_violations' }])
+  interval: any
+  loader2: boolean = false
+  Excel: boolean = false
+  delay: number
+  violationsList: any[] = []
+  objectKeys = Object.keys
+  @ViewChild('dangerAlert') Violation: ElementRef<any>;
+  @ViewChildren(DaterangepickerDirective) pickerDirective: any;
+  editViol: any
+  relayDelay: number
+  hooterDelay: number
+  loaderLatest: boolean = false
+  currentDate: Date;
+  currentTime: Date;
+  isEditTable: boolean = true
+  dataFetchStatus: string = 'init'
 
-sliceVD() {
 
+  constructor(
+    private http: HttpClient,
+    private webServer: FireandsmokeService,
 
-  if (!this.isdate) {
-    this.total = of((this.tempdata.slice((this.page - 1) * this.pageSize, (this.page - 1) * this.pageSize + this.pageSize)).length)
-    this.total = of(this.tempdata.length)
-    this.violData = of((this.tempdata.map((div: any, SINo: number) => ({ SNo: SINo + 1, ...div })).slice((this.page - 1) * this.pageSize, (this.page - 1) * this.pageSize + this.pageSize)))
-  }
-  if (this.isdate) {
-    var table = document.getElementById('dataTable')
-    table?.classList.add('loading')
-    this.webServer.DatewiseViolations(this.fromDate, this.toDate, this.page, this.pageSize, this.selectedCameraId ? this.selectedCameraId : null, this.selectedViolType ? this.selectedViolType : null).subscribe((Response: any) => {
-      if (Response.success) {
-        table?.classList.remove('loading')
-        if (Response.message.length === 0) {
-          this.notification("No violations found")
-        }
-        data = Response.message
-        this.tempdata = data
-        //this.imageData=
-        this.violData = of(this.tempdata)
+    private datepipe: DatePipe,
+    private toasterService: ToastrService,
+    private _lightbox: Lightbox,
+    private _lightBoxConfig: LightboxConfig,
+    private router: Router,
+    private snackbar: MatSnackBar,
+    public modalService: NgbModal,
+    public Router: Router,
+    public ngbCarousal: NgbCarouselConfig
+  ) {
+    this.API = webServer.IP
+    this.ExcelRange = 0
+    this.webServer.CheckApplicationStatus().subscribe((response: any) => {
+      console.log(response)
+      if (response.success) {
+        //this.isActive=true
+        localStorage.setItem('appStatus', response.message[0].process_status)
+        var process = response.message.find((el: any) => {
+
+          return el.process_name == 'fire_smoke_app' ? el : ''
+        })
+        this.isActive = process.process_status
+
 
       }
     })
 
+
+    localStorage.getItem('audioOff') == 'true' ? this.audioOff = true : this.audioOff = false
+    localStorage.getItem('alert') == 'true' ? this.alert = true : this.alert = false
+    console.log(localStorage.getItem('audioOff'), localStorage.getItem('alert'))
+
+    this.delay = this.webServer.logInterval
+    console.log(this.relayDelay)
+    this.hooterDelay = this.webServer.delay
+    this.getCameraList()
+    this.getViolationTypes()
+    this.ngbCarousal.showNavigationArrows = true
+    this.ngbCarousal.showNavigationIndicators = true
+    this.ngbCarousal.interval = 5000000000
+   
   }
 
-}
 
-
-
-
-
-
-async submitForm() {
-  this.isalert = false
-  this.excelLoad = true
-  this.isExcel = false
-
-
-   this.selectedViolType = this.selectedViolation ? <any>this.selectedViolation.data : null
-
-
-  this.selectedCameraId = this.selectedItems ? this.selectedItems.data : null
-
-  var body = {
-    from_date: this.selectedMoments.startDate.format('YYYY-MM-DD HH:mm:ss'),
-    to_date: this.selectedMoments.endDate.format('YYYY-MM-DD HH:mm:ss'),
-    cameraname: this.selectedCameraId ? this.selectedCameraId : 'none',
-    violation_type: this.selectedViolType ? this.selectedViolType : 'none'
+  openDatePicker(event: any) {
+    var dateInput = document.getElementById('dateInput')
+    dateInput.click()
   }
 
-  let dataLength:number=await this.GetViolationLength(body.from_date,body.to_date,body.cameraname!='none'?body.cameraname:null,body.violation_type!='none'?body.violation_type:null)
-  if(dataLength>100){
-    alert("huge Amount of Data found")
+  onCameraIdSelect(event: any) {
+    this.isdatewise ? this.page = 1 : ''
+    this.selectedCameraId = this.selectedItems.data
+    console.log(this.selectedItems)
+    console.log(event)
   }
-  else{
-  var date1 = new Date(this.excelFromDate.value)
-  var date2 = new Date(this.excelToDate.value)
-  var Difference_In_Time = date2.getTime() - date1.getTime();
-  const diffInDs = (Difference_In_Time) / (1000 * 3600 * 24)
 
-  if (diffInDs <= this.ExcelRange) {
+  ngOnDestroy() {
+    this.modalService.dismissAll()
+    clearInterval(this.interval)
 
-    this.webServer.CreateViolationExcel(body).subscribe((Response: any) => {
-      if (Response.success) {
-        this.excelLoad = false
-        this.isExcel = true
 
-        this.Edata = Response.message
-        this.Edata = Response.message
-        this.webServer.DownloadViolationExcel().subscribe(
-          (response: HttpResponse<any>) => {
-            this.excelLoader = false
-            this.excelLoad = false
-            var contentType = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    this.isalert = false
 
-            const blob = new Blob([response.body], { type: '.xlsx' });
-            // var fileName =  response.headers.get('Content-Disposition').split(';')[1];
-            var fileName = "violation report" + " " + this.datepipe.transform(new Date, 'YYYY_MM_dd_h_mm_ss') + '.xlsx'
-            const file = new File([blob], fileName, { type: '.xlsx' });
-            saveAs(blob, fileName);
-          },
-          err => {
-            this.excelLoader = false
-          })
+    this.toasterService.clear()
+
+  }
+
+
+  getCameraList() {
+    var cameralist: any[] = []
+    var cameraIdList: any[] = []
+
+    cameralist[0] = { key: '0', label: 'All Cameras', data: 'all_cameras' }
+    this.webServer.GetCameraDetails().subscribe((data: any) => {
+      if (data.success === true) {
+        data.message.forEach((el: any, i: number) => {
+          cameraIdList.push({ cameraid: i, cameraname: el })
+        });
+        cameraIdList = cameraIdList.filter((el, i, a) => i === a.indexOf(el))
+        cameraIdList.forEach((element: any, i: number) => {
+          var obj;
+          obj = { key: ((i + 1).toString()), label: element.cameraname, data: element.cameraname }
+
+          cameralist.push(obj)
+        });
+
+
+        this.dropdownList = of(cameralist)
+      }
+
+    })
+
+  }
+  ngOnInit(): void {
+
+    var fromDate = this.webServer.dateTransform(new Date()) + ' ' + '00:00:00'
+    var toDate = this.webServer.dateTransform(new Date()) + ' ' + '23:59:59'
+    this.fromDateControl.setValue(fromDate)
+    this.toDateControl.setValue(toDate)
+
+    this.dropdownSettings = {
+      singleSelection: true,
+      idField: 'item_id',
+      textField: 'item_text',
+      itemsShowLimit: 1,
+      allowSearchFilter: true,
+    };
+
+    this.dropdownSettings2 = {
+      singleSelection: true,
+      idField: 'item_id',
+      textField: 'item_text',
+
+      itemsShowLimit: 1,
+      allowSearchFilter: true,
+      closeDropDownOnSelection: true,
+      noDataAvailablePlaceholderText: 'No violation types detected',
+      maxHeight: 197
+    };
+
+    //...........Reading previous violation data's length from local storage....
+    this.violLength = Number(localStorage.getItem("updatedLen"))
+
+
+
+    //------------Reading the camera details--------------
+    //uncomment while you work
+    this.webServer.GetCameraNames().subscribe((data: any) => {
+      console.log(data)
+      if (data.success === true) {
+
+        data.message.forEach((el: any, i: number) => { this.cameraDetails[i] = { camera_id: el.camera_id, camera_name: el.camera_name } })
+        console.log(this.cameraDetails)
+
       }
       else {
-        this.notification(Response.message, 'Retry')
-        this.excelLoad = false
-        this.isExcel = false
-        this.alertmessage = Response.message
-        this.isalert = true
 
       }
-    },
-      err => {
-        this.excelLoad = false
+    })
+    var table = document.getElementById('dataTable')
+    table?.classList.add('loading')
 
-        this.isExcel = false
-        this.alertmessage = "Error while creating excel"
-        this.notification(this.alertmessage, 'Retry')
-        this.isalert = true
-      })
-  }
 
-  else {
-    this.excelLoad = false
-    this.isalert = true
-    this.excelLoader = false
-    this.alertmessage = "Data range should be " + this.ExcelRange + " days"
-    this.webServer.notification(this.alertmessage)
-  }
-  var formData: FormData = new FormData()
+    if (!this.latest || this.isLatest) {
+      this.webServer.GetFiresmokeLiveViolation().subscribe((Rdata: any) => {
+        if (Rdata.success) {
 
-  formData.append('location', this.loc2.value)
-}
-}
+          table?.classList.remove('loading')
 
-//-------METHOD TO DOWNLOAD THE EXCEL--------
- GetViolationLength(fromDate:any,toDate:any,cameraName:any,violationType:any) {
-  this.excelLoader = true
-  var length
-  this.webServer.DatewiseViolations(fromDate, toDate, null, null, cameraName?cameraName:null,violationType?violationType:null).subscribe((Response: any) => {
-    if (Response.success) {
+          var data = Rdata.message
 
-     length= Response.message.length
+          this.imageData = Rdata.message
+          this.tempdata = Rdata.message
+          Number(localStorage.setItem("updatedLen", Rdata.message.length ? Rdata.message.length : 0))
+          this.tempdata = Rdata.message
+          this.total = of(this.tempdata.length)
+          this.violData = of(Rdata.message)
+          this.sliceVD()
+        }
+        else {
+          table?.classList.remove('loading')
+          this.notification(Rdata.message)
+        }
+      },
+        err => {
+          table?.classList.remove('loading')
+
+          this.notification("Error While fetching the data")
+        })
+
+
     }
-  })
-  return length;
-}
+
+
+
+  }
+  notification(message: string, action?: string) {
+    this.snackbar.open(message, action ? action : '', ({
+      duration: 4000, panelClass: ['error'],
+      horizontalPosition: 'end',
+      verticalPosition: 'bottom',
+    })
+    )
+  }
+
+  sliceVD() {
+
+
+    if (!this.isdate) {
+      this.total = of((this.tempdata.slice((this.page - 1) * this.pageSize, (this.page - 1) * this.pageSize + this.pageSize)).length)
+      this.total = of(this.tempdata.length)
+      this.violData = of((this.tempdata.map((div: any, SINo: number) => ({ SNo: SINo + 1, ...div })).slice((this.page - 1) * this.pageSize, (this.page - 1) * this.pageSize + this.pageSize)))
+    }
+    if (this.isdate) {
+      var table = document.getElementById('dataTable')
+      table?.classList.add('loading')
+      this.webServer.DatewiseViolations(this.fromDate, this.toDate, this.page, this.pageSize, this.selectedCameraId ? this.selectedCameraId : null, this.selectedViolType ? this.selectedViolType : null).subscribe((Response: any) => {
+        if (Response.success) {
+          table?.classList.remove('loading')
+          if (Response.message.length === 0) {
+            this.notification("No violations found")
+          }
+          data = Response.message
+          this.tempdata = data
+          this.violData = of(this.tempdata)
+
+        }
+      })
+
+    }
+
+  }
 
 
 
 
 
 
-Submit() {
-  this.isLatest = false
-  this.selectedViolType = this.selectedViolation ? <any>this.selectedViolation.data : null
-  this.selectedCameraId = this.selectedItems ? this.selectedItems.data : null
-  this.Images = []
-  this.fromDate = this.selectedMoments.startDate.format('YYYY-MM-DD HH:mm:ss')
-  this.toDate = this.selectedMoments.endDate.format('YYYY-MM-DD HH:mm:ss')
-  this.Subsciption ? this.Subsciption.unsubscribe() : ''
-  // this.table.nativeElement.querySelectorAll('table.table.table-striped.table-bordered')
-  var table = document.getElementById('dataTable')
-  table?.classList.add('loading')
+  async submitForm() {
+    this.isalert = false
+    this.excelLoad = true
+    this.isExcel = false
 
-  this.pageSize = 30
-  this.page = 1
-  this.isdate = true
-  this.loading = true
-  this.webServer.DatewiseViolations(this.fromDate, this.toDate, null, null, this.selectedCameraId ? this.selectedCameraId : null, this.selectedViolType ? this.selectedViolType : null).subscribe((Response: any) => {
-    if (Response.success) {
-      if (Response.message.length == 0) {
+
+    this.selectedViolType = this.selectedViolation ? <any>this.selectedViolation.data : null
+
+
+    this.selectedCameraId = this.selectedItems ? this.selectedItems.data : null
+
+    var body = {
+      from_date: this.selectedMoments.startDate.format('YYYY-MM-DD HH:mm:ss'),
+      to_date: this.selectedMoments.endDate.format('YYYY-MM-DD HH:mm:ss'),
+      cameraname: this.selectedItems ? this.selectedItems.data : 'none',
+    }
+    console.log(body)
+
+    let dataLength: number = await this.GetViolationLength(body.from_date, body.to_date, body.cameraname != 'none' ? body.cameraname : null)
+   
+    
+
+        this.webServer.CreateViolationExcel(body).subscribe((Response: any) => {
+          if (Response.success) {
+
+            this.Edata = Response.message
+            this.Edata = Response.message
+            this.webServer.DownloadViolationExcel().subscribe(
+              (response: HttpResponse<any>) => {
+                this.excelLoader = false
+                this.excelLoad = false
+                this.isExcel = true
+
+                var contentType = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+
+                const blob = new Blob([response.body], { type: '.xlsx' });
+                var fileName = "violation report" + " " + this.datepipe.transform(new Date, 'YYYY_MM_dd_h_mm_ss') + '.xlsx'
+                const file = new File([blob], fileName, { type: '.xlsx' });
+                saveAs(blob, fileName);
+              },
+              err => {
+                this.excelLoader = false
+                this.excelLoad = false
+                this.isExcel = true
+                this.excelLoader = false
+                this.webServer.notification("Error while downloading excel sheet",'Retry')
+              })
+          }
+          else {
+            this.notification(Response.message, 'Retry')
+            this.excelLoad = false
+            this.isExcel = false
+            this.alertmessage = Response.message
+            this.isalert = true
+
+          }
+        },
+          err => {
+            this.excelLoad = false
+
+            this.isExcel = false
+            this.alertmessage = "Error while creating excel"
+            this.notification(this.alertmessage, 'Retry')
+            this.isalert = true
+          })
+      }
+
+     
+  
+
+  //-------METHOD TO DOWNLOAD THE EXCEL--------
+  GetViolationLength(fromDate: any, toDate: any, cameraName: any, violationType?: any) {
+    this.excelLoader = true
+    var length
+    this.webServer.DatewiseViolations(fromDate, toDate, null, null, cameraName ? cameraName : null, violationType ? violationType : null).subscribe((Response: any) => {
+      if (Response.success) {
+
+        length = Response.message.length
+      }
+    })
+    return length;
+  }
+
+
+
+
+
+
+  Submit() {
+    this.isLatest = false
+    this.selectedViolType = this.selectedViolation ? <any>this.selectedViolation.data : null
+    this.selectedCameraId = this.selectedItems ? this.selectedItems.data : null
+    this.Images = []
+    this.fromDate = this.selectedMoments.startDate.format('YYYY-MM-DD HH:mm:ss')
+    this.toDate = this.selectedMoments.endDate.format('YYYY-MM-DD HH:mm:ss')
+    this.Subsciption ? this.Subsciption.unsubscribe() : ''
+    var table = document.getElementById('dataTable')
+    table?.classList.add('loading')
+
+    this.pageSize = 30
+    this.page = 1
+    this.isdate = true
+    this.loading = true
+    this.webServer.DatewiseViolations(this.fromDate, this.toDate, null, null, this.selectedCameraId ? this.selectedCameraId : null, this.selectedViolType ? this.selectedViolType : null).subscribe((Response: any) => {
+      if (Response.success) {
+        if (Response.message.length == 0) {
+          this.tempdata = []
+          this.violData = of([])
+          this.loading = false
+          this.isdatewise = true
+          this.total = of(0)
+          table?.classList.remove('loading')
+          this.notification("No violations found for entered date and time")
+        }
+        if (Response.message.length > 0) {
+          this.imageData = Response.message
+          this.total = of(Response.message.length)
+          this.webServer.DatewiseViolations(this.fromDate, this.toDate, this.page, this.pageSize, this.selectedCameraId ? this.selectedCameraId : null, this.selectedViolType ? this.selectedViolType : null).subscribe((Response: any) => {
+            if (Response.success) {
+              this.loading = false
+              table?.classList.remove('loading')
+              if (Response.message.length === 0) {
+                this.notification("No violations found")
+                this.violData = of([])
+                this.isdatewise = true
+                this.loading = false
+
+              }
+
+              else {
+
+                data = Response.message
+                this.tempdata = Response.message
+                this.isdatewise = true
+                this.violData = of(this.tempdata)
+                this.sliceVD()
+
+                this.loading = false
+
+              }
+            }
+
+
+            this.loading = false
+
+          },
+            err => {
+              this.loading = false
+              this.notification("Error while fetching the data")
+            })
+        }
+      }
+      else {
         this.tempdata = []
         this.violData = of([])
         this.loading = false
         this.isdatewise = true
         this.total = of(0)
         table?.classList.remove('loading')
-        this.notification("No violations found for entered date and time")
+        table?.classList.remove('loading')
+        this.notification("No violations found")
+        this.loading = false
       }
-      if (Response.message.length > 0) {
-        this.imageData = Response.message
-        this.total = of(Response.message.length)
-        this.webServer.DatewiseViolations(this.fromDate, this.toDate, this.page, this.pageSize, this.selectedCameraId ? this.selectedCameraId : null, this.selectedViolType ? this.selectedViolType : null).subscribe((Response: any) => {
-          if (Response.success) {
-            this.loading = false
-            table?.classList.remove('loading')
-            // console.log(Response.message)
-            if (Response.message.length === 0) {
-              this.notification("No violations found")
-              this.violData = of([])
-              this.isdatewise = true
-              this.loading = false
-
-            }
-
-            else {
-
-              data = Response.message
-              this.tempdata = Response.message
-              this.isdatewise = true
-              //this.imageCarousal()
-              // console.log(this.tempdata)
-
-              this.violData = of(this.tempdata)
-              this.sliceVD()
-
-              this.loading = false
-
-            }
-          }
 
 
-          this.loading = false
 
-        },
-          err => {
-            this.loading = false
-            this.notification("Error while fetching the data")
-          })
-      }
-    }
-    else {
-      this.tempdata = []
-      this.violData = of([])
+    }, err => {
       this.loading = false
-      this.isdatewise = true
-      this.total = of(0)
-      table?.classList.remove('loading')
-      table?.classList.remove('loading')
-      this.notification("No violations found")
-      this.loading = false
-    }
-
-
-
-  }, err => {
-    this.loading = false
-  })
+    })
 
 
 
 
 
-  //------------INTERWAL TO FETCH THE VIOLATIONS -------------
-  this.interval2 = setInterval(() => {
-    if (this.isdate) {
-      if (Number(localStorage.getItem("updatedLen"))) {
-        this.violLength = Number(localStorage.getItem("updatedLen"))
-      }
-
-      this.webServer.LiveViolationData().subscribe((Rdata: any) => {
-
-        if (Rdata.success) {
-          var cviol = Rdata.message
-          var response = { ...Rdata }
-
-          if (response.now_live_count - response.previous_live_count > 0) {
-            this.violdata = Rdata.message
-            //this.imageData = Rdata.message
-            var diff = response.now_live_count - response.previous_live_count;
-            //this.imageCarousal()
-
-            if (this.alert) {
-              for (let i = diff - 1; i >= 0; i--) {
-
-                if (this.alert) {
-                  this.currentViol = this.violdata[i]
-
-                  setTimeout(() => {
-
-                    this.showViol()
-                    !this.audioOff ? this.alertSound() : ''
-                  }, 300);
-
-                }
-
-              }
-            }
+    //------------INTERWAL TO FETCH THE VIOLATIONS -------------
+    
 
 
-
-          }
-
-        }
-
-      })
-    }
-
-  }, 3000)
-
-
-}
+  }
   alertSound() {
     throw new Error('Method not implemented.');
   }
 
 
 
-   //modal to view the image
+  //modal to view the image
 
 
   //MODAL FOR VIOLATION
@@ -774,33 +557,23 @@ Submit() {
           this.violLength = Number(localStorage.getItem("updatedLen"))
         }
         this.Subsciption = this.webServer.GetFiresmokeLiveViolation().subscribe((Rdata: any) => {
-          // console.log(Rdata)
           this.dataFetchStatus = 'success'
 
           if (Rdata.success) {
             var response = { ...Rdata }
             var cviol = [...Rdata.message]
-            console.log(this.isLatest)
-            //console.log(Rdata.message)
             localStorage.setItem("updatedLen", JSON.stringify(cviol.length))
             var updatedLen = Number(localStorage.getItem("updatedLen"))
-            console.log(updatedLen)
-
-            console.log(this.violLength)
-            if (response.now_live_count - response.previous_live_count > 0) {
+            if ((response.now_live_count - response.previous_live_count) > 0) {
 
               var diff = response.now_live_count - response.previous_live_count;
 
               if (this.alert) {
                 for (let i = diff - 1; i >= 0; i--) {
-                  // var todayi = new Date()
-                  // var tempi = new Date(cviol[i].timestamp)
-
-                  //hooter configaration
 
                   if (this.alert) {
 
-                   
+
                     setTimeout(() => {
                       this.currentViol = cviol[i]
 
@@ -812,6 +585,10 @@ Submit() {
 
                 }
               }
+              this.tempdata = Rdata.message
+              this.total = of(this.tempdata.length)
+              this.violData = of(Rdata.message)
+              this.sliceVD()
 
             }
           }
@@ -820,7 +597,7 @@ Submit() {
           this.dataFetchStatus = 'Error'
         }
         )
-        if (!this.latest) {
+        if (false) {
           this.webServer.GetFiresmokeLiveViolation().subscribe((Response: any) => {
             if (!this.latest) {
               if (Response.success === true) {
@@ -836,15 +613,12 @@ Submit() {
                 this.total = of(this.violdata.length)
                 this.loader2 = false
                 this.isdatewise = false
-
                 this.violData = of(Response.message)
-
                 data = Response.message
                 this.sliceVD()
                 var data = Response.message
                 this.violdata = Response.message
                 // this.tempdata = this.violdata
-
                 if (this.tempdata.length > 0) {
                   this.Excel = true
                 }
@@ -856,9 +630,9 @@ Submit() {
 
               }
               else {
-                this.tempdata=[]
-                this.violData=of([])
-                this.total=of(0)
+                this.tempdata = []
+                this.violData = of([])
+                this.total = of(0)
 
               }
             }
@@ -938,7 +712,6 @@ Submit() {
     var table = document.getElementById('dataTable')
     table?.classList.add('loading')
     this.loader2 = true
-    this.interval2 ? clearInterval(this.interval2) : ""
     this.isdate = false
     this.tempdata = []
     this.total = of(0)
@@ -947,7 +720,6 @@ Submit() {
     var table = document.getElementById('dataTable')
     table?.classList.add('loading')
     this.loader2 = true
-    this.interval2 ? clearInterval(this.interval2) : ""
     this.isdate = false
     this.tempdata = []
     this.total = of(0)
@@ -982,7 +754,7 @@ Submit() {
     this.loader2 = false
     this.loaderLatest = true
     this.latest = true
-    // this.interval2.subscribe()
+
     var table = document.getElementById('dataTable')
     table?.classList.add('loading')
     console.log(this.selectedViolType)
@@ -1023,95 +795,29 @@ Submit() {
   }
 
 
-  //----------------METHOD TO DOWNLOAD THE  IMAGE-------------
+  
 
-  // downloadImage(img: any) {
-  //   const imgUrl = img;
-  //   const requestOptions = {
-  //     headers: new HttpHeaders({
-  //       responseType: 'blob',
-  //       // observe:'body'
-  //     }),
-  //     withCredentials: true
-  //   };
-  //   console.log(imgUrl)
-  //   const imgName = imgUrl.substr(imgUrl.lastIndexOf('/') + 1);
-
-
-  //   this.http.get(imgUrl, { responseType: 'blob' }).subscribe(
-  //     (d: any) => {
-  //       console.log("image url data", d);
-  //       saveAs(d, imgName);
-
-  //     },
-  //     (err: any) => {
-  //       console.log("error", err)
-  //     }
-  //   )
-
-  // }
-
-  downloadVideo(video:any) {
-    // const videoUrl = 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4';
+  downloadVideo(video: any) {
     const videoUrl = video;
 
-    // fetch(videoUrl)
-    //   .then(response => response.blob())
-    //   .then(blob => {
-    //     const url = window.URL.createObjectURL(blob);
-    //     const a = document.createElement('a');
-    //     a.href = url;
-    //     a.download = 'video.mp4'; // Specify the desired filename
-    //     document.body.appendChild(a);
-    //     a.click();
-    //     window.URL.revokeObjectURL(url);
-    //   })
-    //   .catch(error => console.error('Error downloading video', error));
-    //   console.log("video download is tirggerd")
-    
-    const requestOptions= {
-      headers :new HttpHeaders({
-        responseType:'blob',
-      }),
-      withCredentials:true
-    };
-    console.log(videoUrl)
-    const videoName = videoUrl.substr(videoUrl.lastIndexOf('/')+1);
-    console.log("video download is triggered")
 
-    this.http.get(videoUrl,{responseType:'blob'}).subscribe((d : any)=>{
-    console.log("video url data",d);
-    saveAs(d,videoName);
+
+    const requestOptions = {
+      headers: new HttpHeaders({
+        responseType: 'blob',
+      }),
+      withCredentials: true
+    };
+    const videoName = videoUrl.substr(videoUrl.lastIndexOf('/') + 1);
+
+    this.http.get(videoUrl, { responseType: 'blob' }).subscribe((d: any) => {
+      saveAs(d, videoName);
     },
-    (err:any) =>{
-      console.log("error",err)
-    }
+      (err: any) => {
+      }
     )
 
   }
-
-
-  // downloadVideo() {
-  //   const videoUrl = "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4"
-
-  //   fetch(videoUrl)
-  //     .then(response => {
-  //       if (!response.ok) {
-  //         throw new Error('Network response was not ok');
-  //       }
-  //       return response.blob();
-  //     })
-  //     .then(blob => {
-  //       const url = window.URL.createObjectURL(blob);
-  //       const a = document.createElement('a');
-  //       a.href = url;
-  //       a.download = 'video.mp4'; // Specify the desired filename
-  //       document.body.appendChild(a);
-  //       a.click();
-  //       window.URL.revokeObjectURL(url);
-  //     })
-  //     .catch(error => console.error('Error downloading video', error));
-  // }
 
 
   ResetFilters() {
@@ -1121,83 +827,6 @@ Submit() {
 
     this.dataread()
   }
-
-  // VerifyTrueViol(event: any, viol: any) {
-  //   this.editViol = viol
-  //   this.webServer.VerifyViolation(this.editViol._id.$oid, true).subscribe((response: any) => {
-  //     this.webServer.notification(response.message)
-  //     if (response.success) {
-  //       this.modalService.dismissAll()
-  //       if (this.isdatewise)
-  //         this.Submit()
-  //     }
-  //     if (!this.isdatewise) {
-  //       this.GetViolationData()
-  //     }
-  //   }, (Err: any) => {
-  //     this.webServer.notification("Error while the  Process", 'Retry')
-  //   })
-  // }
-
-
-  // VerifyFalseViol(event: any, viol: any) {
-  //   this.editViol = viol
-  //   this.webServer.VerifyViolation(this.editViol._id.$oid, false).subscribe((response: any) => {
-  //     this.webServer.notification(response.message)
-  //     if (response.success) {
-  //       this.modalService.dismissAll()
-  //       if (this.isdatewise)
-  //         this.Submit()
-  //     }
-  //     if (!this.isdatewise) {
-  //       this.GetViolationData()
-  //     }
-  //   }, (Err: any) => {
-  //     this.webServer.notification("Error while the  Process", 'Retry')
-  //   })
-  // }
-
-
-  //  //function to get the live  violation data
-  //  GetViolationData() {
-  //   var table = document.getElementById('content')
-  //   table?.classList.add('loading')
-
-  //   if (!this.latest || this.isLatest) {
-  //     this.webServer.LiveRAViolationData().subscribe((Rdata: any) => {
-  //       if (Rdata.success) {
-
-  //         table?.classList.remove('loading')
-
-  //         var data = Rdata.message
-
-  //         this.imageData = Rdata.message
-  //         this.tempdata = Rdata.message
-  //         Number(localStorage.setItem("updatedLen", Rdata.message.length ? Rdata.message.length : 0))
-
-  //         this.tempdata = Rdata.message
-  //         // this.imageCarousal()
-
-
-  //         this.total = of(this.tempdata.length)
-  //         this.violData = of(Rdata.message)
-  //         this.sliceVD()
-
-
-  //       }
-  //       else {
-  //         table?.classList.remove('loading')
-  //         this.notification(Rdata.message)
-  //       }
-  //     },
-  //       err => {
-  //         table?.classList.remove('loading')
-
-  //         this.notification("Error While fetching the data")
-  //       })
-
-  //   }
-  // }
 
 
   IsDeleteData(modal: any, violationData: any) {
@@ -1243,7 +872,6 @@ Submit() {
           Number(localStorage.setItem("updatedLen", Rdata.message.length ? Rdata.message.length : 0))
 
           this.tempdata = Rdata.message
-          // this.imageCarousal()
 
 
           this.total = of(this.tempdata.length)
@@ -1291,7 +919,8 @@ Submit() {
         this.modalService.dismissAll()
 
         this.webServer.notification(response.message)
-this.RefreshViolationData()      } else {
+        this.RefreshViolationData()
+      } else {
         this.modalService.dismissAll()
         this.webServer.notification(response.message, 'Retry')
       }
@@ -1309,7 +938,7 @@ this.RefreshViolationData()      } else {
     if (!this.isdatewise && !this.isLatest) {
       var table = document.getElementById('dataTable')
       table?.classList.add('loading')
-  
+
       this.webServer.GetFiresmokeLiveViolation().subscribe((Response: any) => {
         if (!this.latest) {
           table.classList.remove('loading')
@@ -1319,7 +948,7 @@ this.RefreshViolationData()      } else {
             this.tempdata = Response.message
             //  this.imageCarousal()
             this.total = of(this.violdata.length)
-          
+
 
             this.violData = of(Response.message)
 
@@ -1350,79 +979,79 @@ this.RefreshViolationData()      } else {
 
     else if (this.isdatewise && !this.isLatest) {
       var table = document.getElementById('dataTable')
-    table?.classList.add('loading')
+      table?.classList.add('loading')
 
-    this.pageSize = 30
-    this.page = 1
-    this.webServer.DatewiseFiresmokeViolations(this.fromDate, this.toDate, null, null, this.selectedCameraId ? this.selectedCameraId : null, this.selectedViolType ? this.selectedViolType : null).subscribe((Response: any) => {
-      this.dataFetchStatus = 'success'
-      if (Response.success) {
-        if (Response.message.length == 0) {
+      this.pageSize = 30
+      this.page = 1
+      this.webServer.DatewiseFiresmokeViolations(this.fromDate, this.toDate, null, null, this.selectedCameraId ? this.selectedCameraId : null, this.selectedViolType ? this.selectedViolType : null).subscribe((Response: any) => {
+        this.dataFetchStatus = 'success'
+        if (Response.success) {
+          if (Response.message.length == 0) {
+            this.tempdata = []
+            this.violData = of([])
+
+            this.total = of(0)
+            table?.classList.remove('loading')
+            this.notification("No violations found for entered date and time")
+          }
+          if (Response.message.length > 0) {
+            this.imageData = Response.message
+            this.total = of(Response.message.length)
+            this.webServer.DatewiseFiresmokeViolations(this.fromDate, this.toDate, this.page, this.pageSize, this.selectedCameraId ? this.selectedCameraId : null, this.selectedViolType ? this.selectedViolType : null).subscribe((Response: any) => {
+              if (Response.success) {
+                table?.classList.remove('loading')
+                // console.log(Response.message)
+                if (Response.message.length === 0) {
+                  this.notification("No violations found")
+                  this.violData = of([])
+
+                }
+
+                else {
+
+                  this.tempdata = Response.message
+                  //this.imageCarousal()
+                  // console.log(this.tempdata)
+
+                  this.violData = of(this.tempdata)
+                  this.sliceVD()
+
+
+                }
+              }
+
+
+
+            },
+              err => {
+                this.dataFetchStatus = 'Error'
+                this.notification("Error while fetching the data")
+              })
+          }
+        }
+        else {
           this.tempdata = []
           this.violData = of([])
-          
+
           this.total = of(0)
           table?.classList.remove('loading')
-          this.notification("No violations found for entered date and time")
+          table?.classList.remove('loading')
+          this.notification("No violations found")
         }
-        if (Response.message.length > 0) {
-          this.imageData = Response.message
-          this.total = of(Response.message.length)
-          this.webServer.DatewiseFiresmokeViolations(this.fromDate, this.toDate, this.page, this.pageSize, this.selectedCameraId ? this.selectedCameraId : null, this.selectedViolType ? this.selectedViolType : null).subscribe((Response: any) => {
-            if (Response.success) {
-              table?.classList.remove('loading')
-              // console.log(Response.message)
-              if (Response.message.length === 0) {
-                this.notification("No violations found")
-                this.violData = of([])
-
-              }
-
-              else {
-
-                this.tempdata = Response.message
-                //this.imageCarousal()
-                // console.log(this.tempdata)
-
-                this.violData = of(this.tempdata)
-                this.sliceVD()
-
-
-              }
-            }
 
 
 
-          },
-            err => {
-              this.dataFetchStatus = 'Error'
-              this.notification("Error while fetching the data")
-            })
-        }
-      }
-      else {
-        this.tempdata = []
-        this.violData = of([])
-        
-        this.total = of(0)
-        table?.classList.remove('loading')
-        table?.classList.remove('loading')
-        this.notification("No violations found")
-      }
-
-
-
-    }, err => {
-    })
+      }, err => {
+      })
 
     }
 
-    else if(this.isLatest || this.latest){
-     this.getLatestData()
+    else if (this.isLatest || this.latest) {
+      this.getLatestData()
     }
   }
-  
 
 
-  
+
+
 }

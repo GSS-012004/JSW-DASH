@@ -215,8 +215,8 @@ border:1px solid #ccc;
 .data-container{
   display: block;
   width:100%;
-  margin: 0.5rem;
-  padding:0.7rem;
+  /* margin: 0.5rem; */
+  /* padding:0.7rem; */
 }
 
 .data-container .header{
@@ -229,7 +229,7 @@ border:1px solid #ccc;
   padding-left: 2rem !important;
   padding-top: 1rem !important;
   padding-bottom:1rem !important;
-  grid-template-columns: 5% 30% 20% 15% 15% 10% 5%;
+  grid-template-columns: 5% 30% 10% 15% 15% 10% 10% ;
   /* grid-template-columns: 5% 30% 20% 15% 15% 10% 5% 10%; */
 
   border:var(--border);
@@ -253,8 +253,8 @@ border:1px solid #ccc;
   overflow-wrap: break-word;
   border:var(--border);
   border-radius: 10px;
-  grid-template-columns: 5% 30% 20% 15% 15% 10% 5%;
-  /* grid-template-columns: 5% 30% 20% 15% 15% 10% 5% 10%; */
+  /* grid-template-columns: 5% 30% 20% 15% 15% 10% 5%; */
+  grid-template-columns: 5% 30% 10% 15% 15% 10% 10% 5%;
 
 
 }
