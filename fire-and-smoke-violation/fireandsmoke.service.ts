@@ -3,6 +3,8 @@ import { DatePipe } from '@angular/common';
 import { HttpClient, HttpHeaders, HttpResponse, HttpXsrfTokenExtractor } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { Observable, retry, Subject } from 'rxjs';
+// import { configService } from './config';
 
 @Injectable({
   providedIn: 'root'
@@ -15,7 +17,7 @@ export class FireandsmokeService {
   dashboardInterval:number
   jobsheetInterval:number
   logInterval:number
- 
+  //isCollapse:Subject<boolean>=new Subject()
 
   constructor
   (public http:HttpClient,
@@ -59,9 +61,12 @@ CheckApplicationStatus(){
 
 LiveViolationData (cameraName?:string | null,violType?:string|null,page?:number,size?:number) {
 
- 
+  // cameraName=cameraName? cameraName.replace(/ /g,'_'):null
+
   cameraName==="all_cameras"?cameraName=null:''
   violType==="all_violations"?violType=null:''
+  //this.IP=<string>localStorage.getItem('changedIP')
+  // return cameraId && !violType  ? this.httpClient.get(this.IP + "/jsw/live_data/cameraname/" + cameraId) :!cameraId && violType ? this.httpClient.get(this.IP + "/jsw/live_data/violation_type/"+violType):cameraId && violType? this.httpClient.get(this.IP + "/jsw/live_data/"+cameraId+'/'+violType):this.httpClient.get(this.IP + "/jsw/live_data")
   return  page && size && cameraName && !violType ? this.http.get(this.IP + '/live_data1/cameraname/' + cameraName + '/' + page + '/' + size): 
    page && size && (!cameraName) && (!violType) ? this.http.get(this.IP + '/live_data1/pagination/'+ page + '/' + size):
    !page && !size &&cameraName &&!violType? this.http.get(this.IP +'/live_data1/cameraname/'+ cameraName):
@@ -76,7 +81,7 @@ DatewiseViolations(from: any, to: any, page?: number|null, size?: number|null, c
   var toD = this.dateTransform(to)
   console.log(fromD, toD)
   console.log(page, size)
- 
+  // cameraName=cameraName? cameraName.replace(/ /g,'_'):null
 
   cameraName==="all_cameras"?cameraName=null:''
   violType==="all_violations"?violType=null:''
@@ -116,6 +121,7 @@ GetViolationList()
 }
 
 LatestData(violtype:any,cameraname:string){
+  // return this.http.get(this.IP+'/latest_data')
   console.log(violtype,cameraname)
   return cameraname && !violtype?this.http.get(this.IP+'/latest_data_camera_name/'+cameraname):!cameraname && violtype?this.http.get(this.IP+'/latest_data_violation_type/'+violtype): cameraname && violtype?this.http.get(this.IP + '/latest_data/'+ cameraname +'/'+ violtype):
   this.http.get(this.IP + '/latest_data_violation_type')
@@ -152,16 +158,32 @@ readConfigFile(filepath:any,mimeType:any){
 }
 
 
+// GetRiRoViolationData(data:any){
+//   return  this.http.post(this.IP+'/riro_violation_data',data)
+// }
+
 VerifyViolation(id:string,flag:any){
   return this.http.get(this.IP+'/FIRESMOKEverification/'+id+'/'+flag)
 }
+
+// LiveRAViolationData (cameraName?:string | null,violType?:string|null,page?:number,size?:number) {
+
+//   cameraName==="all_cameras"?cameraName=null:''
+//   violType==="all_violations"?violType=null:''
+ 
+//   return page && size && cameraName && !violType? this.http.get(this.IP + '/live_data1RA' + cameraName + '/' + page + '/' + size): 
+//   page && size && (!cameraName) && (!violType) ? this.http.get(this.IP + '/live_data1RA/pagination/'+ page +'/'+ size):
+//   !page && !size &&cameraName && !violType? this.http.get(this.IP + '/live_data1RA/' + cameraName):
+//   this.http.get(this.IP +'/live_data1RA')
+
+// }
 
 DatewiseFiresmokeViolations(from: any, to: any, page?: number|null, size?: number|null, cameraName?: string | null,violType?:string|null) {
   var fromD = this.dateTransform(from)
   var toD = this.dateTransform(to)
   console.log(fromD, toD)
   console.log(page, size)
-  
+  // cameraName=cameraName? cameraName.replace(/ /g,'_'):null
 
   cameraName === "all_cameras"?cameraName=null:''
   violType === "all_violations"?violType=null:''
@@ -184,6 +206,11 @@ GetFireVideos(videoName?:string){
 GetFiresmokeLiveViolation(){
   return this.http.get(this.IP+'/FiresmokeLiveviolationdata')
   }
+
+// VerifyFiresmokeViolation(){
+//   return this.http.get(this.IP+'/FIRESMOKEverification/'+id+'/'+flag)
+
+// }
 
 
 }

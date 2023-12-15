@@ -10,7 +10,7 @@
 
                 </span>
                 <span class="danger-badge" *ngIf="!isActive">Stopped</span></span></span>
-       <span class="float-start"> <h5 class="d-span">Fire Violations</h5></span>
+       <span class="float-start"> <h5 class="d-span">Fire/Smoke/Dust Violations</h5></span>
         </div>
     </div>
 
@@ -62,11 +62,11 @@
                         </div>
 
                         <div class="col-xl-7 col-sm-12 col-lg-12 col-xs-12 col-md-12 align-items-center">
-                            <button class="btn default-outline ms-3 me-3" (click)="ResetFilters()"
+                            <button class="btn default-outline me-3" (click)="ResetFilters()"
                                 *ngIf="selectedItems!=null||selectedMoments.startDate!=null ">&times; Cancel
                                 Filters</button>
 
-                            <button class="btn default text-white me-3 ms-1" style="width:80px" (click)="Submit()"
+                            <button class="btn default text-white me-3" style="width:80px" (click)="Submit()"
                                 style="width:80px"
                                 [disabled]="(selectedMoments.startDate===null || selectedMoments.endDate===null)">
                                 <span
@@ -160,7 +160,8 @@
                                 <div scope="col" class="d-flex justify-content-center align-items-center">
                                     <div>
                                         <b>
-                                         Violation  Video
+                                            <!-- <fa-icon icon="image" class="font-custome me-1"></fa-icon> -->
+                                         Violation Image/Video
                                         </b>
                                     </div>
                                 </div>
@@ -173,15 +174,13 @@
                                         </b>
                                     </div>
                                 </div>
+
+
                                 <div scope="col" class = "d-flex justify-content-center align-items-center">
                                     <div>
-
-                                        <b>
-                                            Violation Type
-                                        </b>
+                                      <b>Violation Type</b>
                                     </div>
-                                </div>
-
+                                  </div>
 
                                 <div scope="col" class="d-flex justify-content-center align-items-center">
                                     <b>
@@ -208,32 +207,82 @@
                             
                             </div>
                             
-                            <ng-container *ngFor="let data of violData|async;let i=index" style="justify-content: center;"> 
+                            <div *ngFor="let data of violData|async;let i=index" style="justify-content: center;"> 
                                 <div>
-                                    <ngb-carousel>
-                                        <ng-container *ngFor="let d of data.data.reverse();let in=index">
-                                            <ng-template ngbSlide>
+                                    <p-carousel [value]="data.data">
+                                           <ng-template pTemplate="violation" let-d>
                                                 <div class="data-wrapper p-2">
 
                                                     <div class="d-flex justify-content-center align-items-center">
-                                                        <div class = "column-flex" style= padding-left:2rem>{{data.SNo+1}}.{{in+1}}</div></div>
+                                                        <div class = "column-flex" style= padding-left:2rem>{{data.SNo+1}}</div></div>
 
                                                     <div class="d-flex justify-content-center align-items-center">
                                                         <div class = "column-flex">
-                                                            <video width="300" controls   controller preload="auto"  class="custom-video">
-                                                               <source  [src]="API +'/getFireVideo/'+d.video_file_name" type="video/mp4">
+                                                            <video width="300" *ngIf="d.processing_mode==='VIDEO'" controls preload="auto"  class="custom-video">
+                                                               <source  [src]="API +'/getFireVideo/'+d.video_file_name" type="video/quicktime">
+                                                               <!-- <source  [src]="API +'/getFireVideo/'+d.video_file_name" type="video/mov">
+                                                               <source  [src]="API +'/getFireVideo/'+d.video_file_name" type="video/mp4"> -->
+
+
                                                             </video>
+                                                            <img *ngIf="d.processing_mode==='IMAGE'" loading="lazy" class="image"  [src]="API +'/GETFIRESMOKEIMAGE/'+d.video_file_name"  (click)="imageCarousal(d.video_file_name)">
                                                         
                                                             
                                                             <br/>
-                                                    <div style=" padding-left: 5rem;">
+                                                    <div style=" padding-left: 5rem;"  *ngIf="d.processing_mode==='VIDEO'">
                                                             <button class="btn btn-sm default text-white mt-2" > 
                                                                 <a (click)="downloadVideo(API+'/getFireVideo/'+d.video_file_name)">Download Video</a>
                                                                 <fa-icon icon="download" class="ms-1 me-1" style="cursor: pointer;"></fa-icon>
                                                             </button>
                                                         </div>
+
+                                                        <div style=" padding-left: 5rem;"  *ngIf="d.processing_mode==='IMAGE'">
+                                                            <button class="btn btn-sm default text-white mt-2" > 
+                                                              <a (click)="downloadVideo(API+'/GETFIRESMOKEIMAGE/'+d.video_file_name)">Download Image</a>
+                                                              <fa-icon icon="download" class="ms-1 me-1" style="cursor: pointer;"></fa-icon>
+                                                            </button>
+                                                          </div>
                                                        </div>
                                                     </div>
+
+                                                                            <!-- <td scope="col">
+                                                                                <span><b class="mb-3">Fire</b></span><br>
+                                                                                <span><b>Smoke</b></span><br>
+                                                                                <span><b>Fire and Smoke</b></span><br>
+
+
+                                                                            </td> -->
+
+
+
+
+
+                                                                            <!-- <div class="d-flex justify-content-center align-items-center">
+                                                                                <div>
+                                                                                    <div *ngFor="let object of d.object_data;let in=index"
+                                                                                        ngClass="in!= (d.object_data.length-1) ? 'border-bottom':''">
+                        
+                                                                                        <div>
+                                                                                            <div class="mb-3">{{object.violation_count}} </div>
+                                                                                            <ul class="list-unstyled">
+                                                                                                <li>
+                                                                                                    <div
+                                                                                                        *ngFor="let key of objectKeys(object);">
+                                                                                                        <div class="items"
+                                                                                                            *ngIf="(key==='Helmet'?object[key]==='none'?false:object[key]===false?true:false:key.toLowerCase()==='vest'?object[key]!=='vest'?true:false:false)">
+                                                                                                            <input id="item1" type="checkbox"
+                                                                                                                [checked]="key==='Vest'?object[key].toLowerCase()=='vest'?true:false:object[key]">
+                                                                                                            <label
+                                                                                                                for="item1">{{key==='Vest'?'Vest':key}}</label>
+                                                                                                        </div>
+                        
+                                                                                                    </div>
+                                                                                                </li>
+                                                                                            </ul>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div> -->
 
 
                                     
@@ -245,23 +294,41 @@
                                                     <div class="d-flex justify-content-center align-items-center">
                                                         {{d.analytics_details}}
                                                     </div>
-
-
+                          
 
                                                     <div class="d-flex justify-content-center align-items-center">
                                                         <div class = "column-flex">
-                                                             
-                                                        <div>
+                                                             <!-- <div>{{d.timestamp|dateFormater}}</div><br> -->
+                                                        <div *ngIf="d.processing_mode==='VIDEO'">
+                                                       
+                                                                        <!-- <fa-icon icon="clock" class="font-custome me-1"></fa-icon> -->
+                                                                        <!-- <fa-icon icon="fa-regular fa-circle-pause" class="font-custome me-1"></fa-icon> -->
                                                             Start time:<br>
                                                             {{d.start_time|dateFormater}} 
                                                         <br><br>
 
                                                         
-                                                        End time:<br>
-                                                        {{d.stop_time|dateFormater}} 
+                                                               End time:<br>
+                                                               {{d.stop_time|dateFormater}} 
                                                         
-                                                       
+                                                        <!-- <b> 
+                                                                Duration:
+                                                        </b> -->
                                                     </div>
+
+
+                                                    <div *ngIf="d.processing_mode==='IMAGE'">
+                                                       
+                                                        <!-- <fa-icon icon="clock" class="font-custome me-1"></fa-icon> -->
+                                                        <!-- <fa-icon icon="fa-regular fa-circle-pause" class="font-custome me-1"></fa-icon> -->
+                                            
+                                            {{d.start_time|dateFormater}} 
+                                       
+
+                                        
+                                               
+                                    </div>
+
                                                     </div>
                                                     </div>
 
@@ -273,7 +340,7 @@
                                                <div  class="d-flex justify-content-center align-items-center">
                                                 <div class = "column-flex">
                                                     <div *ngIf="isEditTable" id="verify" style="width:5rem" >
-                                                                        
+                                                                        <!-- <fa-icon icon="pen-to-square" style="cursor: pointer;"></fa-icon> -->
                                                         <div *ngIf="!d.violation_verificaton_status;else verified">
 
                                                             <div class="form-check form-check-inline" id="right">
@@ -289,11 +356,11 @@
 
 
                                                            
-                                                                <div class="form-check form-check-inline" id="wrong" >
+                                                                <div class="form-check form-check-inline" id="wrong">
                                                                 
                                                                 <input type="radio" [value]=false (change)="VerifyFalseViol($event,d)"
                                                                         [defaultValue]=false id="no"
-                                                                        class="form-check-input" ><label for="no" 
+                                                                        class="form-check-input" style="padding-left:1rem"><label for="no" 
                                                                     class="form-check-label text-danger">No
                                                                     </label>
                                                             </div>
@@ -322,10 +389,9 @@
                                                 </div>
                                             
                                             </ng-template>
-                                        </ng-container>
-                                    </ngb-carousel>
+                                    </p-carousel>
                                 </div>
-                            </ng-container>
+                            </div>
                         </div>
                 
                     
@@ -369,6 +435,7 @@
                         <i class="material-icons">&#xE5CD;</i>
                     </div>
                     <h4 class="modal-title w-100">Are you sure?</h4>
+                    <!-- <button type="button" class="btn"  aria-hidden="true">&times;</button> -->
                 </div>
                 <div class="modal-body">
                     <p>Do you really want to delete this violation Details? This process cannot be undone.

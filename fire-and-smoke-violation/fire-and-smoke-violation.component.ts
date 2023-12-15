@@ -1,6 +1,6 @@
 import { DatePipe } from '@angular/common';
 import { HttpClient, HttpHeaders, HttpResponse } from '@angular/common/http';
-import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, Query, ViewChild, ViewChildren } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, OnDestroy, OnInit, Query, ViewChild, ViewChildren } from '@angular/core';
 import { ServerService } from 'src/app/Services/server.service';
 import { Lightbox, LightboxConfig } from 'ngx-lightbox'
 import { Router } from '@angular/router';
@@ -15,6 +15,7 @@ import { Moment } from 'moment';
 import { DaterangepickerDirective } from 'ngx-daterangepicker-material';
 import dayjs from 'dayjs/esm';
 import { FireandsmokeService } from './fireandsmoke.service';
+// import * as dayjs from 'dayjs'
 
 export interface violation {
   si_no?: string
@@ -25,6 +26,7 @@ var data: any[] = [];
 @Component({
   selector: 'app-fire-and-smoke-violation',
   templateUrl: './fire-and-smoke-violation.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrls: ['./fire-and-smoke-violation.component.css']
 })
 
@@ -71,7 +73,7 @@ export class FireAndSmokeViolationComponent implements OnInit, OnDestroy, AfterV
   excelLoad: boolean = false
   isExcel: boolean = false
   selectedViolation!: any
-  selectedMoments: { startDate: Moment, endDate: Moment } = null
+  selectedMoments: { startDate: Moment, endDate: Moment } = {startDate: null,endDate: null}
   excelFromDate: FormControl = new FormControl(new Date(), Validators.required)
   excelToDate: FormControl = new FormControl(new Date(), Validators.required)
   ExcelRange: number
@@ -123,8 +125,12 @@ export class FireAndSmokeViolationComponent implements OnInit, OnDestroy, AfterV
     private snackbar: MatSnackBar,
     public modalService: NgbModal,
     public Router: Router,
-    public ngbCarousal: NgbCarouselConfig
+    public ngbCarousal: NgbCarouselConfig,
   ) {
+    this.ngbCarousal.showNavigationArrows = true
+    this.ngbCarousal.showNavigationIndicators = true
+    this.ngbCarousal.interval = 30000
+    console.log(ngbCarousal,'ngbcarousal config')
     this.API = webServer.IP
     this.ExcelRange = 0
     this.webServer.CheckApplicationStatus().subscribe((response: any) => {
@@ -152,10 +158,8 @@ export class FireAndSmokeViolationComponent implements OnInit, OnDestroy, AfterV
     this.hooterDelay = this.webServer.delay
     this.getCameraList()
     this.getViolationTypes()
-    this.ngbCarousal.showNavigationArrows = true
-    this.ngbCarousal.showNavigationIndicators = true
-    this.ngbCarousal.interval = 5000000000
-   
+  
+
   }
 
 
@@ -195,6 +199,7 @@ export class FireAndSmokeViolationComponent implements OnInit, OnDestroy, AfterV
         });
         cameraIdList = cameraIdList.filter((el, i, a) => i === a.indexOf(el))
         cameraIdList.forEach((element: any, i: number) => {
+          // cameralist[i + 1] = { item_id: element.cameraid, item_text: element.cameraname }
           var obj;
           obj = { key: ((i + 1).toString()), label: element.cameraname, data: element.cameraname }
 
@@ -219,8 +224,13 @@ export class FireAndSmokeViolationComponent implements OnInit, OnDestroy, AfterV
       singleSelection: true,
       idField: 'item_id',
       textField: 'item_text',
+      // selectAllText: 'Select All',
+      // unSelectAllText: 'UnSelect All',
       itemsShowLimit: 1,
       allowSearchFilter: true,
+      // closeDropDownOnSelection: true,
+      // noDataAvailablePlaceholderText: 'No cameras detected',
+      // maxHeight: 197
     };
 
     this.dropdownSettings2 = {
@@ -261,7 +271,7 @@ export class FireAndSmokeViolationComponent implements OnInit, OnDestroy, AfterV
     if (!this.latest || this.isLatest) {
       this.webServer.GetFiresmokeLiveViolation().subscribe((Rdata: any) => {
         if (Rdata.success) {
-
+console.log('hooooldroejfe')
           table?.classList.remove('loading')
 
           var data = Rdata.message
@@ -272,9 +282,11 @@ export class FireAndSmokeViolationComponent implements OnInit, OnDestroy, AfterV
           this.tempdata = Rdata.message
           this.total = of(this.tempdata.length)
           this.violData = of(Rdata.message)
+          console.log(this.violData,'hiiiii')
           this.sliceVD()
         }
         else {
+          console.log('hello snfdfdsfsd')
           table?.classList.remove('loading')
           this.notification(Rdata.message)
         }
@@ -319,6 +331,7 @@ export class FireAndSmokeViolationComponent implements OnInit, OnDestroy, AfterV
           }
           data = Response.message
           this.tempdata = data
+          //this.imageData=
           this.violData = of(this.tempdata)
 
         }
@@ -369,6 +382,7 @@ export class FireAndSmokeViolationComponent implements OnInit, OnDestroy, AfterV
                 var contentType = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
 
                 const blob = new Blob([response.body], { type: '.xlsx' });
+                // var fileName =  response.headers.get('Content-Disposition').split(';')[1];
                 var fileName = "violation report" + " " + this.datepipe.transform(new Date, 'YYYY_MM_dd_h_mm_ss') + '.xlsx'
                 const file = new File([blob], fileName, { type: '.xlsx' });
                 saveAs(blob, fileName);
@@ -429,6 +443,7 @@ export class FireAndSmokeViolationComponent implements OnInit, OnDestroy, AfterV
     this.fromDate = this.selectedMoments.startDate.format('YYYY-MM-DD HH:mm:ss')
     this.toDate = this.selectedMoments.endDate.format('YYYY-MM-DD HH:mm:ss')
     this.Subsciption ? this.Subsciption.unsubscribe() : ''
+    // this.table.nativeElement.querySelectorAll('table.table.table-striped.table-bordered')
     var table = document.getElementById('dataTable')
     table?.classList.add('loading')
 
@@ -454,6 +469,7 @@ export class FireAndSmokeViolationComponent implements OnInit, OnDestroy, AfterV
             if (Response.success) {
               this.loading = false
               table?.classList.remove('loading')
+              // console.log(Response.message)
               if (Response.message.length === 0) {
                 this.notification("No violations found")
                 this.violData = of([])
@@ -557,6 +573,7 @@ export class FireAndSmokeViolationComponent implements OnInit, OnDestroy, AfterV
           this.violLength = Number(localStorage.getItem("updatedLen"))
         }
         this.Subsciption = this.webServer.GetFiresmokeLiveViolation().subscribe((Rdata: any) => {
+          // console.log(Rdata)
           this.dataFetchStatus = 'success'
 
           if (Rdata.success) {
@@ -570,6 +587,10 @@ export class FireAndSmokeViolationComponent implements OnInit, OnDestroy, AfterV
 
               if (this.alert) {
                 for (let i = diff - 1; i >= 0; i--) {
+                  // var todayi = new Date()
+                  // var tempi = new Date(cviol[i].timestamp)
+
+                  //hooter configaration
 
                   if (this.alert) {
 
@@ -588,6 +609,7 @@ export class FireAndSmokeViolationComponent implements OnInit, OnDestroy, AfterV
               this.tempdata = Rdata.message
               this.total = of(this.tempdata.length)
               this.violData = of(Rdata.message)
+              // console.log(this.violData)
               this.sliceVD()
 
             }
@@ -795,9 +817,36 @@ export class FireAndSmokeViolationComponent implements OnInit, OnDestroy, AfterV
   }
 
 
-  
+  //----------------METHOD TO DOWNLOAD THE  IMAGE-------------
+
+  // downloadImage(img: any) {
+  //   const imgUrl = img;
+  //   const requestOptions = {
+  //     headers: new HttpHeaders({
+  //       responseType: 'blob',
+  //       // observe:'body'
+  //     }),
+  //     withCredentials: true
+  //   };
+  //   console.log(imgUrl)
+  //   const imgName = imgUrl.substr(imgUrl.lastIndexOf('/') + 1);
+
+
+  //   this.http.get(imgUrl, { responseType: 'blob' }).subscribe(
+  //     (d: any) => {
+  //       console.log("image url data", d);
+  //       saveAs(d, imgName);
+
+  //     },
+  //     (err: any) => {
+  //       console.log("error", err)
+  //     }
+  //   )
+
+  // }
 
   downloadVideo(video: any) {
+    // const videoUrl = 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4';
     const videoUrl = video;
 
 
@@ -820,6 +869,29 @@ export class FireAndSmokeViolationComponent implements OnInit, OnDestroy, AfterV
   }
 
 
+  // downloadVideo() {
+  //   const videoUrl = "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4"
+
+  //   fetch(videoUrl)
+  //     .then(response => {
+  //       if (!response.ok) {
+  //         throw new Error('Network response was not ok');
+  //       }
+  //       return response.blob();
+  //     })
+  //     .then(blob => {
+  //       const url = window.URL.createObjectURL(blob);
+  //       const a = document.createElement('a');
+  //       a.href = url;
+  //       a.download = 'video.mp4'; // Specify the desired filename
+  //       document.body.appendChild(a);
+  //       a.click();
+  //       window.URL.revokeObjectURL(url);
+  //     })
+  //     .catch(error => console.error('Error downloading video', error));
+  // }
+
+
   ResetFilters() {
     this.selectedMoments = null
     this.selectedItems = null
@@ -827,6 +899,83 @@ export class FireAndSmokeViolationComponent implements OnInit, OnDestroy, AfterV
 
     this.dataread()
   }
+
+  // VerifyTrueViol(event: any, viol: any) {
+  //   this.editViol = viol
+  //   this.webServer.VerifyViolation(this.editViol._id.$oid, true).subscribe((response: any) => {
+  //     this.webServer.notification(response.message)
+  //     if (response.success) {
+  //       this.modalService.dismissAll()
+  //       if (this.isdatewise)
+  //         this.Submit()
+  //     }
+  //     if (!this.isdatewise) {
+  //       this.GetViolationData()
+  //     }
+  //   }, (Err: any) => {
+  //     this.webServer.notification("Error while the  Process", 'Retry')
+  //   })
+  // }
+
+
+  // VerifyFalseViol(event: any, viol: any) {
+  //   this.editViol = viol
+  //   this.webServer.VerifyViolation(this.editViol._id.$oid, false).subscribe((response: any) => {
+  //     this.webServer.notification(response.message)
+  //     if (response.success) {
+  //       this.modalService.dismissAll()
+  //       if (this.isdatewise)
+  //         this.Submit()
+  //     }
+  //     if (!this.isdatewise) {
+  //       this.GetViolationData()
+  //     }
+  //   }, (Err: any) => {
+  //     this.webServer.notification("Error while the  Process", 'Retry')
+  //   })
+  // }
+
+
+  //  //function to get the live  violation data
+  //  GetViolationData() {
+  //   var table = document.getElementById('content')
+  //   table?.classList.add('loading')
+
+  //   if (!this.latest || this.isLatest) {
+  //     this.webServer.LiveRAViolationData().subscribe((Rdata: any) => {
+  //       if (Rdata.success) {
+
+  //         table?.classList.remove('loading')
+
+  //         var data = Rdata.message
+
+  //         this.imageData = Rdata.message
+  //         this.tempdata = Rdata.message
+  //         Number(localStorage.setItem("updatedLen", Rdata.message.length ? Rdata.message.length : 0))
+
+  //         this.tempdata = Rdata.message
+  //         // this.imageCarousal()
+
+
+  //         this.total = of(this.tempdata.length)
+  //         this.violData = of(Rdata.message)
+  //         this.sliceVD()
+
+
+  //       }
+  //       else {
+  //         table?.classList.remove('loading')
+  //         this.notification(Rdata.message)
+  //       }
+  //     },
+  //       err => {
+  //         table?.classList.remove('loading')
+
+  //         this.notification("Error While fetching the data")
+  //       })
+
+  //   }
+  // }
 
 
   IsDeleteData(modal: any, violationData: any) {
@@ -872,6 +1021,7 @@ export class FireAndSmokeViolationComponent implements OnInit, OnDestroy, AfterV
           Number(localStorage.setItem("updatedLen", Rdata.message.length ? Rdata.message.length : 0))
 
           this.tempdata = Rdata.message
+          // this.imageCarousal()
 
 
           this.total = of(this.tempdata.length)
@@ -1049,6 +1199,43 @@ export class FireAndSmokeViolationComponent implements OnInit, OnDestroy, AfterV
     else if (this.isLatest || this.latest) {
       this.getLatestData()
     }
+  }
+
+
+
+
+  imageCarousal(viol: any) {
+    this.Images = [];
+    if(Array.isArray(viol)) {
+      viol.forEach((imgname: string, index: number) => {
+      this.Images[index] = {
+        src: this.API + '/GETFIRESMOKEIMAGE/' + imgname,
+        thumb: this.API + '/GETFIRESMOKEIMAGE/' + imgname,
+        caption: imgname,
+      };
+    });
+    }
+    else if (typeof viol === 'string') {
+      // If viol.riro_image.After is a string, assume it's a single image
+      this.Images[0] = {
+        src: this.API + '/GETFIRESMOKEIMAGE/' + viol,
+        thumb: this.API + '/GETFIRESMOKEIMAGE/' + viol,
+        caption: viol,
+      };
+    } 
+    else{
+      console.error('Invalid format for viol.riro_image.After');
+      // Handle other cases or throw an error if needed
+      return;
+    }
+  
+    this.open(0);
+  }
+  open(index: number): void {
+    this._lightbox.open(this.Images, index);
+  }
+  close(): void {
+    this._lightbox.close();
   }
 
 
